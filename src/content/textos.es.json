@@ -1,0 +1,117 @@
+{
+  "general": {
+    "titulo": "La Gran Aventura",
+    "entrarVR": "Entrar a VR",
+    "sinWebXR": "Este navegador no soporta realidad virtual. Abrí esta página en el navegador del Meta Quest.",
+    "dejaControles": "Dejá los controles y mostrá tus manos",
+    "saltar": "Saltar",
+    "fuente": "Fuente: UNICEF Argentina con datos de la DEIS – Ministerio de Salud"
+  },
+  "pruebaGestos": {
+    "titulo": "Prueba de gestos",
+    "pasoTocar": "Tocá el botón con la punta del índice",
+    "boton": "Tocame",
+    "pasoAgarrar": "Agarrá el sonajero juntando pulgar e índice y dejalo en la canasta",
+    "pasoFrotar": "Frotá la esfera celeste con la mano durante 2 segundos",
+    "pasoPalmear": "Palmeá 3 veces la esfera naranja",
+    "listo": "¡Todo funciona!",
+    "repetir": "Repetir",
+    "toques": "Toques: {n}",
+    "frotado": "Frotado: {n} s",
+    "palmadas": "Palmadas: {n}"
+  },
+  "intro": {
+    "dato": "En 2014 nacieron 777.012 bebés en Argentina. En 2024, 413.135: casi la mitad. En la Ciudad, la caída fue del 53%.",
+    "invitacion": "Detrás de cada número hay una decisión: empezar una familia. ¿Querés vivirla?",
+    "boton": "Iniciar la aventura"
+  },
+  "personalizacion": {
+    "vos": "Vos",
+    "pareja": "Tu pareja",
+    "pelo": "Pelo",
+    "piel": "Piel",
+    "ojos": "Ojos",
+    "sortear": "Otro nombre",
+    "listo": "¡Listo!"
+  },
+  "rasgos": {
+    "pelo": {
+      "negro": "negro",
+      "castanoOscuro": "castaño oscuro",
+      "castanoClaro": "castaño claro",
+      "rubio": "rubio",
+      "colorado": "colorado"
+    },
+    "piel": {
+      "muyClara": "muy clara",
+      "clara": "clara",
+      "triguena": "trigueña",
+      "morena": "morena",
+      "oscura": "oscura"
+    },
+    "ojos": {
+      "marronOscuro": "marrones oscuros",
+      "miel": "miel",
+      "verde": "verdes",
+      "azul": "azules",
+      "gris": "grises"
+    }
+  },
+  "nacimiento": {
+    "tocaPanza": "Tocá la panza",
+    "nacio": "¡Nació {nombre}!",
+    "peloDe": "el pelo de {nombre}",
+    "ojosDe": "los ojos de {nombre}",
+    "peloSorpresa": "el pelo {color}, una sorpresa de los abuelos",
+    "ojosSorpresa": "los ojos {color}, una sorpresa de los abuelos",
+    "saco": "Sacó {pelo} y {ojos}."
+  },
+  "bebe": {
+    "curiosidad": "Tu bebé ya conoce tu voz: la escuchó durante meses desde la panza.",
+    "agarraBiberon": "Agarrá el biberón juntando pulgar e índice",
+    "daselo": "Dáselo",
+    "levantalo": "Agarrá a tu bebé para levantarlo",
+    "palmeale": "Palmeale la espalda 3 veces",
+    "panalSucio": "Tirá el pañal sucio al tacho",
+    "panalNuevo": "Poné el pañal nuevo"
+  },
+  "preadolescente": {
+    "curiosidad": "Entre los 6 y los 12 años se recomienda dormir entre 9 y 12 horas.",
+    "pregunta": "¿Cuánto es 3/4 de 20?",
+    "noCreo": "Mmm, no creo...",
+    "yaEntendi": "¡Ya entendí!",
+    "cena": "Poné en el plato verdura y proteína",
+    "chisteFritas": "¡Papas fritas otra vez? Mejor el finde.",
+    "chisteGolosina": "¡Eso es postre!",
+    "dormir": "Dejá la tablet en el cargador y apagá la luz",
+    "unMinutoMas": "¡Un minuto más!",
+    "aTiempo": "¡A tiempo!",
+    "cansado": "Mañana voy a estar re cansado"
+  },
+  "adolescente": {
+    "curiosidad": "El cerebro adolescente sigue desarrollándose hasta pasados los 20 años. Tu compañía sigue importando.",
+    "afeitada": "Agarrá la máquina y seguí las flechas",
+    "crema": "Agarrá el pomo y tocá los granitos",
+    "llaves": "Agarrá las llaves del perchero",
+    "noLeGusto": "¿Y si no le gusto?",
+    "consejos": [
+      { "texto": "Sé vos mismo", "respuesta": "Tenés razón. ¡Voy así como soy!" },
+      { "texto": "Respetá siempre lo que el otro quiere", "respuesta": "Obvio. Le voy a preguntar qué quiere hacer ella." },
+      { "texto": "Cualquier cosa, me llamás", "respuesta": "Gracias. Saber que estás me deja más tranquilo." }
+    ]
+  },
+  "final": {
+    "frases": [
+      "Criar no es hacerlo perfecto. Es estar.",
+      "Cada familia es una aventura distinta, y ninguna se vive sola.",
+      "La tuya puede empezar cuando vos decidas."
+    ],
+    "programasTitulo": "La Ciudad te acompaña",
+    "programas": [
+      "Programa de acompañamiento a familias (contenido provisorio)",
+      "Controles pediátricos en los centros de salud (contenido provisorio)",
+      "Espacios de primera infancia (contenido provisorio)"
+    ],
+    "gracias": "¡Gracias por jugar!"
+  }
+}

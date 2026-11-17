@@ -1,0 +1,104 @@
+/**
+ * Configuración general: paletas, nombres, decisiones abiertas, tiempos y métricas.
+ * Cada decisión abierta arranca con la opción predeterminada del documento.
+ */
+
+const params = new URLSearchParams(typeof location !== 'undefined' ? location.search : '');
+
+export interface PaletteOption {
+  /** Clave del nombre visible en textos.es.json (rasgos.<rasgo>.<clave>). */
+  id: string;
+  color: string;
+}
+
+export type TraitKey = 'pelo' | 'piel' | 'ojos';
+
+export const PALETAS: Record<TraitKey, PaletteOption[]> = {
+  pelo: [
+    { id: 'negro', color: '#1f1b1a' },
+    { id: 'castanoOscuro', color: '#4a2a17' },
+    { id: 'castanoClaro', color: '#93603a' },
+    { id: 'rubio', color: '#e2c26c' },
+    { id: 'colorado', color: '#b8471f' },
+  ],
+  piel: [
+    { id: 'muyClara', color: '#f7dcc8' },
+    { id: 'clara', color: '#e9bb98' },
+    { id: 'triguena', color: '#c99067' },
+    { id: 'morena', color: '#91603e' },
+    { id: 'oscura', color: '#5b3a27' },
+  ],
+  ojos: [
+    { id: 'marronOscuro', color: '#3d2314' },
+    { id: 'miel', color: '#a0692a' },
+    { id: 'verde', color: '#4f8a3a' },
+    { id: 'azul', color: '#3f74c5' },
+    { id: 'gris', color: '#7d8a96' },
+  ],
+};
+
+/** Nombres que se sortean para el jugador y la pareja. */
+export const NOMBRES_ADULTOS = [
+  'Lucía', 'Martín', 'Sofía', 'Mateo', 'Valentina', 'Juan', 'Camila', 'Tomás',
+  'Julieta', 'Lautaro', 'Agustina', 'Facundo', 'Micaela', 'Nicolás', 'Florencia', 'Santiago',
+];
+
+/** Nombres que se sortean (o se ofrecen) para el bebé. */
+export const NOMBRES_BEBE = ['Benjamín', 'Thiago', 'Bautista', 'Joaquín', 'Felipe', 'Lorenzo'];
+
+export interface Tiempos {
+  /** Segundos sin avance hasta que aparece la mano fantasma. */
+  pista: number;
+  /** Segundos hasta que un paso se completa solo. */
+  autocompletar: number;
+  /** Tope de cada etapa jugable (bebé, preadolescente, adolescente). */
+  topeEtapa: number;
+  inicio: number;
+  final: number;
+  /** Duración de cada fundido (los dos sumados no superan 300 ms). */
+  fundido: number;
+}
+
+export const CONFIG = {
+  // ── Decisiones abiertas ────────────────────────────────────────────────
+  hijoSexo: 'varon' as 'varon' | 'aleatorio',
+  quienGesta: 'pareja' as 'pareja' | 'elegible',
+  /** true: se ve a la chica en la puerta del cine. */
+  citaVisible: true,
+  /** 'elegible' = 3 sugerencias para tocar (suma unos 10 s). */
+  nombreBebe: 'sorteado' as 'sorteado' | 'elegible',
+
+  // ── Modos ──────────────────────────────────────────────────────────────
+  /** Reinicio automático al final. También con ?evento=1. */
+  modoEvento: params.get('evento') === '1',
+  /** ?debug=1: teclas 0-9 saltan a una escena, FPS y cronómetros en pantalla. */
+  debug: params.get('debug') === '1',
+
+  tiempos: { pista: 10, autocompletar: 30, topeEtapa: 135, inicio: 60, final: 60, fundido: 0.15 } as Tiempos,
+
+  /** URL que recibe los eventos por POST. Vacío = solo guardado local. */
+  metricsEndpoint: '',
+
+  // ── Interacción con manos (ajustables en las pruebas con el visor) ─────
+  manos: {
+    /** Pinza: empieza por debajo de esta distancia entre pulgar e índice (m). */
+    pinzaInicio: 0.015,
+    /** Pinza: se suelta por encima de esta distancia (m). */
+    pinzaSuelta: 0.03,
+    /** Radio de agarre alrededor del objeto (m). */
+    radioAgarre: 0.07,
+    /** Radio de las zonas de destino (m). */
+    radioZona: 0.15,
+    /** Recorrido del botón hasta activarse (m). */
+    recorridoBoton: 0.015,
+    /** Rebote entre toques del mismo botón (s). */
+    rebote: 0.4,
+    /** Velocidad mínima para contar una palmada o un frotado (m/s). */
+    velocidadFrotado: 0.15,
+    /** Tiempo sin seguimiento tras el cual lo agarrado vuelve a su lugar (s). */
+    manoPerdida: 0.5,
+  },
+
+  /** Altura del pecho respecto de los ojos, para ubicar lo interactivo (m). */
+  pechoBajoOjos: 0.4,
+};

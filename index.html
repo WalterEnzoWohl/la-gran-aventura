@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1d2433" />
+    <title>La Gran Aventura</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #1d2433; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+      #app { position: fixed; inset: 0; }
+      #portada {
+        position: fixed; left: 50%; bottom: 8vh; transform: translateX(-50%);
+        display: flex; flex-direction: column; align-items: center; gap: 14px;
+        padding: 22px 32px; border-radius: 18px; background: rgba(29, 36, 51, 0.88); color: #fff; text-align: center;
+        max-width: min(560px, calc(100vw - 32px)); box-sizing: border-box;
+      }
+      #titulo { margin: 0; font-size: 30px; }
+      #entrar {
+        font: 700 22px "Segoe UI", Roboto, Arial, sans-serif; color: #fff; background: #2f7de1;
+        border: 0; border-radius: 12px; padding: 14px 34px; cursor: pointer;
+      }
+      #entrar:disabled { opacity: 0.6; }
+      #mensaje { margin: 0; font-size: 16px; color: #ffd166; }
+      #mensaje:empty { display: none; }
+      body.en-vr #portada { display: none; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="portada">
+      <h1 id="titulo"></h1>
+      <button id="entrar" hidden></button>
+      <p id="mensaje"></p>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "la-gran-aventura",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "La Gran Aventura: experiencia WebXR con detección de manos para Meta Quest 2",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@iwer/devui": "^2.8.0",
+    "@types/three": "^0.187.0",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "iwer": "^2.8.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}
