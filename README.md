@@ -4,7 +4,12 @@ Experiencia WebXR para Meta Quest 2, solo con las manos. La especificación vige
 
 > Estado: **hito 1 (base)**. Solo existe la escena de prueba de gestos. El README completo para el equipo llega en el hito 6.
 
-## Probar
+## Jugar
+
+**https://lgavr.vercel.app**: abrir esa dirección en el navegador del Meta Quest 2 y tocar "Entrar a VR".
+Se publica sola en Vercel con cada `git push` a `main`. Agregando `?debug=1` se ven FPS, draw calls y triángulos.
+
+## Desarrollo
 
 ```bash
 npm install
@@ -14,7 +19,7 @@ npm run build      # typecheck + build de producción en dist/
 ```
 
 - **En la PC:** abrir `https://localhost:5173/?debug=1`. Como el navegador no tiene visor, se carga el emulador IWER (solo en desarrollo) con manos emuladas; "Entrar a VR" abre la sesión emulada.
-- **En el Quest 2:** con la PC y el visor en la misma red Wi-Fi, abrir en el navegador del Quest `https://<IP-de-la-PC>:5173/?debug=1`, aceptar la advertencia del certificado y tocar "Entrar a VR".
+- **En el Quest 2, sin publicar:** con la PC y el visor en la misma red Wi-Fi, abrir en el navegador del Quest `https://<IP-de-la-PC>:5173/?debug=1`, aceptar la advertencia del certificado y tocar "Entrar a VR".
 
 `?debug=1` muestra FPS, draw calls y triángulos; las teclas 0–9 saltan de escena y la S equivale a "Saltar".
 
