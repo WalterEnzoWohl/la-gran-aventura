@@ -17,7 +17,7 @@ import type { ManoEstado } from '../core/HandTracker';
 import type { Grabbable } from '../core/Interactable';
 import { TextPanel } from '../core/TextPanel';
 import { ease } from '../core/Tweens';
-import { crearPersona, ROPA, type Persona } from '../game/characters';
+import { crearPersona, puntoCara, ROPA, type Persona } from '../game/characters';
 import { crearHabitacion, mesa, mueble, PARED_FONDO, planta } from '../game/escenarios';
 import { pick } from '../game/GameState';
 import { heredar } from '../game/inheritance';
@@ -37,12 +37,6 @@ interface Trazo {
   seguidor: PathFollower;
   espuma: Mesh[];
   flechas: Mesh[];
-}
-
-/** Punto sobre la superficie de la cara (elipsoide de la cabeza), un poco hacia afuera. */
-function sobreLaCara(x: number, y: number, afuera = 0.006): Vector3 {
-  const k = 1 - (x / 0.12) ** 2 - (y / 0.13) ** 2;
-  return new Vector3(x, y, 0.12 * Math.sqrt(Math.max(0.05, k)) + afuera);
 }
 
 export class Teen extends EscenaEtapa {
@@ -143,7 +137,7 @@ export class Teen extends EscenaEtapa {
     // Espuma y flechas de los dos trazos (mejilla izquierda y derecha), de arriba hacia abajo.
     const cab = this.hijoBano.cabeza;
     for (const lado of [-1, 1]) {
-      const locales = [0, 1, 2, 3, 4, 5].map((i) => sobreLaCara(lado * 0.07, 0.005 - i * 0.019));
+      const locales = [0, 1, 2, 3, 4, 5].map((i) => puntoCara(lado * 0.07, 0.005 - i * 0.019, 0.006));
       const espuma = locales.map((p) => malla(cab, GEO.esfera, '#ffffff', { pos: [p.x, p.y, p.z - 0.004], esc: [0.02, 0.016, 0.012] }));
       const flechas = locales.map((p) => {
         const f = malla(cab, GEO.cono, '#ffb703', { pos: [p.x * 1.05, p.y, p.z + 0.012], esc: [0.008, 0.014, 0.008], rot: [Math.PI, 0, 0] });
@@ -153,12 +147,12 @@ export class Teen extends EscenaEtapa {
       this.trazos.push({ locales, seguidor: new PathFollower([], 0.04), espuma, flechas });
     }
     for (const x of [-0.025, 0.025]) {
-      const p = sobreLaCara(x, -0.1);
+      const p = puntoCara(x, -0.1, 0.006);
       this.espumaMenton.push(malla(cab, GEO.esfera, '#ffffff', { pos: [p.x, p.y, p.z - 0.004], esc: [0.022, 0.016, 0.012] }));
     }
     // Granitos en los cachetes: quedan a la vista después de la afeitada (el pelo no los tapa).
     for (const [x, y] of [[-0.06, -0.028], [0.058, -0.048]]) {
-      const p = sobreLaCara(x, y, 0.002);
+      const p = puntoCara(x, y, 0.005);
       this.granitos.push(malla(cab, GEO.esfera, '#e05a5a', { pos: [p.x, p.y, p.z], esc: 0.009 }));
     }
 
@@ -267,7 +261,7 @@ export class Teen extends EscenaEtapa {
     g.add(this.hijoCine.grupo);
     if (CONFIG.citaVisible) {
       const colores = { pelo: pick(PALETAS.pelo).color, piel: pick(PALETAS.piel).color, ojos: pick(PALETAS.ojos).color };
-      this.cita = crearPersona({ edad: 'dieciseis', peinado: 'largo', ropa: '#9d4edd', pantalon: '#3c3c58', ...colores });
+      this.cita = crearPersona({ edad: 'dieciseis', genero: 'mujer', peinado: 'largo', ropa: '#9d4edd', pantalon: '#3c3c58', ...colores });
       this.cita.grupo.position.set(0.55, piso, -3.55);
       this.cita.grupo.rotation.y = -0.3;
       g.add(this.cita.grupo);
@@ -327,6 +321,12 @@ export class Teen extends EscenaEtapa {
 
   protected tick(dt: number): void {
     this.tiempo += dt;
+    if (this.bano.visible) this.hijoBano.animar(dt);
+    if (this.entrada.visible) this.hijoEntrada.animar(dt);
+    if (this.cine.visible) {
+      this.hijoCine.animar(dt);
+      this.cita?.animar(dt);
+    }
     // Afeitada: la máquina va borrando la espuma a medida que sigue el trazo.
     const tr = this.trazos[this.trazoActual];
     if (tr && !tr.seguidor.completo && this.agarreMaquina.sostenidoPor) {

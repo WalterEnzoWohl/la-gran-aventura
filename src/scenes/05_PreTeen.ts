@@ -46,6 +46,7 @@ export class PreTeen extends EscenaEtapa {
 
   // Cena
   private hijoCena!: Persona;
+  private hijoDormido!: Persona;
   private alimentos = new Map<Alimento, Grabbable>();
   private enPlato = new Set<Alimento>();
   private zonaPlato!: DropZone;
@@ -219,7 +220,7 @@ export class PreTeen extends EscenaEtapa {
     cuadro(g, 0.2, piso + 1.6, PARED_FONDO, '#a7c7e7', 0.5, 0.35);
 
     // Hijo acostado boca arriba, cabeza a la izquierda, cerca del borde de la cama.
-    const hijo = crearPersona({ edad: 'once', peinado: 'corto', ...ROPA.once, ...coloresHijo(this.juego.estado.hijo!) });
+    const hijo = this.hijoDormido = crearPersona({ edad: 'once', peinado: 'corto', ...ROPA.once, ...coloresHijo(this.juego.estado.hijo!) });
     const acostado = new Group();
     acostado.position.set(0.7, colchon + 0.1, -0.72);
     acostado.rotation.y = Math.PI / 2;
@@ -284,7 +285,10 @@ export class PreTeen extends EscenaEtapa {
     this.interruptor.tecla.rotation.x = 0.25;
   }
 
-  protected tick(): void {
+  protected tick(dt: number): void {
+    if (this.escritorio.visible) this.hijoTarea.animar(dt);
+    if (this.cocina.visible) this.hijoCena.animar(dt);
+    if (this.dormitorio.visible) this.hijoDormido.animar(dt);
     // El reloj llega a las 22:00 justo al tope de la etapa.
     const minutos = INICIO_RELOJ + (FIN_RELOJ - INICIO_RELOJ) * this.etapa.fraccion;
     this.reloj.poner(minutos);

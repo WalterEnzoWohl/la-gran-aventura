@@ -231,6 +231,7 @@ export class Baby extends EscenaEtapa {
 
   protected tick(dt: number): void {
     this.tiempo += dt;
+    this.bebe.animar(dt);
     // Llanto: la cabeza se mueve un poco.
     this.bebe.cabeza.rotation.z = this.pararLlanto ? Math.sin(this.tiempo * 12) * 0.08 : 0;
 

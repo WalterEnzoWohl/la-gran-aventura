@@ -257,7 +257,9 @@ export class Customize extends EscenaInicio {
   }
 
   /** Mueve y aclara las muestras según el hundimiento y la cercanía del dedo. */
-  protected tick(): void {
+  protected tick(dt: number): void {
+    this.personas.jugador?.animar(dt);
+    this.personas.pareja?.animar(dt);
     for (const { instancias, muestras } of this.columnas) {
       muestras.forEach((m, i) => {
         _p.set(m.x, m.y, m.tapa.position.z - 0.01);

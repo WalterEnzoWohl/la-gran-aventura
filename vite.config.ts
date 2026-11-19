@@ -55,6 +55,7 @@ export default defineConfig({
       input: {
         main: resolve(raiz, 'index.html'),
         admin: resolve(raiz, 'admin.html'),
+        personajes: resolve(raiz, 'personajes.html'),
       },
     },
   },

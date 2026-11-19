@@ -174,6 +174,29 @@
     "familia": "Nuestra familia",
     "nacimientoFoto": "¡Llegó!"
   },
+  "galeria": {
+    "titulo": "Personajes",
+    "volver": "Volver a La Gran Aventura",
+    "personaje": "Modelo",
+    "adulto": "Adulto",
+    "adulta": "Adulta",
+    "bebe": "Bebé",
+    "once": "11 años",
+    "dieciseis": "16 años",
+    "peinado": "Peinado",
+    "rasgos": "Colores",
+    "ayuda": "Arrastrá para girar. Usá la rueda para acercarte.",
+    "completo": "Cuerpo entero",
+    "rostro": "Cara",
+    "sinWebGL": "El navegador no pudo abrir el visor 3D.",
+    "peinados": {
+      "corto": "Corto con volumen",
+      "largo": "Cola baja",
+      "raya": "Raya al costado",
+      "melena": "Melena",
+      "rulos": "Rulos"
+    }
+  },
   "admin": {
     "titulo": "La Gran Aventura · Métricas",
     "intro": "Datos anónimos guardados en este dispositivo (sin nombres ni datos personales). Abrí esta página en cada visor para ver sus sesiones.",

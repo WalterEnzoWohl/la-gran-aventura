@@ -9,7 +9,7 @@ import { t } from '../content/textos';
 import { crearBoton } from '../core/Button';
 import { TextPanel } from '../core/TextPanel';
 import { ease } from '../core/Tweens';
-import { crearBebe, crearPersona, estiloAdulto, type Persona } from '../game/characters';
+import { crearBebe, crearPersona, estiloAdulto, type Bebe, type Persona } from '../game/characters';
 import { crearHabitacion, cuadro, planta, sofa, ventana, PARED_FONDO } from '../game/escenarios';
 import { pick } from '../game/GameState';
 import { heredar } from '../game/inheritance';
@@ -22,6 +22,7 @@ export class PregnancyBirth extends EscenaInicio {
   private living = new Group();
   private sala = new Group();
   private pareja!: Persona;
+  private bebeNacido: Bebe | null = null;
   /** La panza que se toca: la de la pareja o, si la jugadora es mujer, la propia. */
   private panza!: Mesh;
   /** Panza propia de la jugadora: sigue a su cuerpo, debajo de la cabeza. */
@@ -57,8 +58,8 @@ export class PregnancyBirth extends EscenaInicio {
       this.panzaPropia = new Group();
       // Torso de la jugadora (para que al mirar hacia abajo vea su cuerpo, no una pelota suelta).
       const ropa = estiloAdulto('mujer');
-      malla(this.panzaPropia, GEO.cilindro, ropa.ropa, { pos: [0, 0.2, 0.13], esc: [0.16, 0.42, 0.11] });
-      malla(this.panzaPropia, GEO.cilindro, ropa.pantalon, { pos: [0, -0.2, 0.13], esc: [0.15, 0.3, 0.1] });
+      malla(this.panzaPropia, GEO.esferaFina, matPropio(ropa.ropa), { pos: [0, 0.2, 0.13], esc: [0.16, 0.24, 0.11] });
+      malla(this.panzaPropia, GEO.esferaFina, matPropio(ropa.pantalon), { pos: [0, -0.2, 0.13], esc: [0.15, 0.21, 0.1] });
       this.panza = malla(this.panzaPropia, GEO.esferaFina, matPropio(ropa.ropa), { esc: [0.17, 0.17, 0.19] });
       this.living.add(this.panzaPropia);
       this.ubicarPanzaPropia();
@@ -87,8 +88,10 @@ export class PregnancyBirth extends EscenaInicio {
     this.living.worldToLocal(this.juego.cabeza(this.panzaPropia.position)).add(new Vector3(0, -0.58, -0.17));
   }
 
-  protected tick(): void {
+  protected tick(dt: number): void {
     this.ubicarPanzaPropia();
+    if (this.living.visible) this.pareja.animar(dt);
+    this.bebeNacido?.animar(dt);
   }
 
   /** Patadita: la panza se mueve, suena y aparecen corazones. */
@@ -222,6 +225,7 @@ export class PregnancyBirth extends EscenaInicio {
     this.sala.add(manta);
     malla(manta, GEO.esferaFina, '#bfe0f5', { esc: [0.2, 0.08, 0.16] });
     const bebe = crearBebe(coloresHijo(estado.hijo!));
+    this.bebeNacido = bebe;
     bebe.grupo.rotation.set(-Math.PI / 2 + 0.5, 0, 0);
     bebe.grupo.position.set(0, 0.05, 0);
     manta.add(bebe.grupo);

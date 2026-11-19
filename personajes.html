@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f1e5">
+    <title>Personajes · La Gran Aventura</title>
+  </head>
+  <body>
+    <main class="galeria">
+      <header class="cabecera">
+        <a id="volver" href="./"></a>
+        <h1 id="titulo"></h1>
+      </header>
+      <div class="taller">
+        <aside class="controles">
+          <fieldset>
+            <legend id="personaje-leyenda"></legend>
+            <div id="personajes" class="opciones"></div>
+          </fieldset>
+          <label id="fila-peinado" class="fila"><span id="peinado-titulo"></span><select id="peinado"></select></label>
+          <fieldset>
+            <legend id="rasgos-leyenda"></legend>
+            <div id="rasgos" class="rasgos"></div>
+          </fieldset>
+        </aside>
+        <figure class="figura">
+          <div id="escenario"></div>
+          <figcaption>
+            <p id="ayuda"></p>
+            <div class="vistas">
+              <button id="completo" type="button" aria-pressed="true"></button>
+              <button id="rostro" type="button" aria-pressed="false"></button>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+    </main>
+    <script type="module" src="/src/galeria.ts"></script>
+  </body>
+</html>

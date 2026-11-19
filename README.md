@@ -111,6 +111,7 @@ npm run build      # typecheck + build de producción en dist/
 ```
 
 - **En la PC:** `https://localhost:5173/?debug=1`. Si el navegador no tiene visor, se carga el emulador **IWER** con manos emuladas (solo en desarrollo).
+- **Galería 3D:** `https://localhost:5173/personajes.html`. Permite rotar los modelos del juego, acercarse a la cara y probar peinados y colores.
 - **En el Quest sin publicar:** misma red Wi-Fi, `https://<IP-de-la-PC>:5173/?debug=1`.
 - **`?debug=1`:** FPS, draw calls y triángulos **por ojo**, cronómetros de sesión y de etapa. Teclas **0–6** para saltar de escena (0 intro, 1 personalización, 2 embarazo, 3 bebé, 4 preadolescente, 5 adolescente, 6 final), **S** para "Saltar". En la consola del navegador, una tabla con el máximo por escena.
 - **`?prueba=1`:** agrega al principio la escena de prueba de gestos (botón, agarrar, frotar y palmear), útil para ajustar los umbrales de las manos.
