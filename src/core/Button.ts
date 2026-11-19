@@ -18,7 +18,9 @@ export interface BotonOpciones {
 }
 
 const CAJA = new BoxGeometry(1, 1, 1);
+CAJA.userData.compartida = true;
 const MAT_BASE = new MeshLambertMaterial({ color: 0x2b2f3a });
+MAT_BASE.userData.compartido = true;
 
 export interface Boton {
   grupo: Group;

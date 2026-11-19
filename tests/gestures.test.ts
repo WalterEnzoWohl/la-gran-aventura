@@ -44,6 +44,7 @@ describe('PokeDetector (hundimiento y rebote de 400 ms)', () => {
 
   it('se activa solo al llegar al fondo del recorrido', () => {
     const p = new PokeDetector(0.015, 0.4);
+    expect(p.update(null, dt)).toBe(false);
     expect(p.update(0.005, dt)).toBe(false);
     expect(p.depth).toBeCloseTo(0.005);
     expect(p.update(0.01, dt)).toBe(false);
@@ -51,14 +52,23 @@ describe('PokeDetector (hundimiento y rebote de 400 ms)', () => {
     expect(p.depth).toBeCloseTo(0.015);
   });
 
+  it('no se activa si el dedo ya estaba adentro cuando apareció el botón', () => {
+    const p = new PokeDetector(0.015, 0.4);
+    for (let i = 0; i < 50; i++) expect(p.update(0.02, dt)).toBe(false);
+    expect(p.update(null, dt)).toBe(false);
+    expect(p.update(0.02, dt)).toBe(true);
+  });
+
   it('no se repite mientras el dedo sigue adentro', () => {
     const p = new PokeDetector(0.015, 0.4);
+    p.update(null, dt);
     expect(p.update(0.02, dt)).toBe(true);
     for (let i = 0; i < 100; i++) expect(p.update(0.02, dt)).toBe(false);
   });
 
   it('respeta el rebote aunque el dedo salga y vuelva enseguida', () => {
     const p = new PokeDetector(0.015, 0.4);
+    p.update(null, dt);
     expect(p.update(0.02, dt)).toBe(true);
     expect(p.update(null, 0.1)).toBe(false); // sale a los 100 ms
     expect(p.update(0.02, 0.1)).toBe(false); // vuelve a los 200 ms: todavía en rebote

@@ -24,7 +24,14 @@ export function materialesPropios(obj: Object3D): void {
   obj.traverse((o) => {
     const m = o as Mesh;
     if (!m.isMesh) return;
-    m.material = Array.isArray(m.material) ? m.material.map((x) => x.clone()) : m.material.clone();
+    const clonar = (x: Material) => {
+      const c = x.clone();
+      // El clon es propio: se libera con la escena aunque el original sea compartido.
+      delete c.userData.compartido;
+      delete c.userData.emisivoBase;
+      return c;
+    };
+    m.material = Array.isArray(m.material) ? m.material.map(clonar) : clonar(m.material);
   });
 }
 
@@ -38,7 +45,8 @@ export function setBrillo(obj: Object3D, nivel: number): void {
     if (!m.isMesh || o.userData.sinBrillo) return;
     const mats = (Array.isArray(m.material) ? m.material : [m.material]) as (Material & { emissive?: Color })[];
     for (const mat of mats) {
-      if (!mat.emissive) continue;
+      // Un material compartido brillaría en todos los objetos que lo usan.
+      if (!mat.emissive || mat.userData.compartido) continue;
       if (!mat.userData.emisivoBase) mat.userData.emisivoBase = mat.emissive.clone();
       mat.emissive.copy(mat.userData.emisivoBase as Color).lerp(COLOR_BRILLO, nivel);
     }
@@ -160,6 +168,30 @@ export class RubZone {
   }
 }
 
+export interface TocableOpciones {
+  /** Radio de la zona (m). */
+  radio: number;
+  onToque: (mano: ManoEstado) => void;
+  marcador?: Object3D;
+}
+
+/**
+ * Zona que se activa con solo apoyar la punta del índice o la palma (sin velocidad
+ * mínima): para gestos suaves como tocar la panza.
+ */
+export class Tocable {
+  habilitado = true;
+  /**
+   * Arranca "adentro": solo se activa después de ver la mano afuera. Así no se
+   * dispara sola si la mano ya estaba ahí al empezar la escena.
+   */
+  dentro = true;
+  constructor(
+    public objetivo: Object3D,
+    public opts: TocableOpciones,
+  ) {}
+}
+
 // ─── Gestor ──────────────────────────────────────────────────────────────
 
 const _v = new Vector3();
@@ -170,6 +202,7 @@ export class Interactables {
   grabbables: Grabbable[] = [];
   zonas: DropZone[] = [];
   frotables: RubZone[] = [];
+  tocables: Tocable[] = [];
   private tweens = new Tweens();
   private oyentes: (() => void)[] = [];
 
@@ -215,12 +248,20 @@ export class Interactables {
     return r;
   }
 
+  addTocable(objetivo: Object3D, opts: TocableOpciones): Tocable {
+    if (opts.marcador) materialesPropios(opts.marcador);
+    const t = new Tocable(objetivo, opts);
+    this.tocables.push(t);
+    return t;
+  }
+
   /** Borra todo (al cambiar de escena). */
   limpiar(): void {
     this.pokeables = [];
     this.grabbables = [];
     this.zonas = [];
     this.frotables = [];
+    this.tocables = [];
     this.tweens.dispose();
     this.tweens = new Tweens();
   }
@@ -235,6 +276,28 @@ export class Interactables {
     this.actualizarPokes(dt);
     this.actualizarZonas();
     this.actualizarFrotables(dt);
+    this.actualizarTocables();
+  }
+
+  private actualizarTocables(): void {
+    for (const t of this.tocables) {
+      if (!t.habilitado || !visibleEnCadena(t.objetivo)) continue;
+      const centro = t.objetivo.getWorldPosition(_w);
+      let mano: ManoEstado | null = null;
+      let cerca = false;
+      for (const m of this.manos.manos) {
+        if (!m.visible) continue;
+        const d = Math.min(m.indice.distanceTo(centro), m.palma.distanceTo(centro));
+        if (d <= t.opts.radio) mano = m;
+        if (d <= t.opts.radio + 0.08) cerca = true;
+      }
+      if (t.opts.marcador) setBrillo(t.opts.marcador, cerca ? 0.3 : 0);
+      if (mano && !t.dentro) {
+        t.dentro = true;
+        this.actividad();
+        t.opts.onToque(mano);
+      } else if (!mano) t.dentro = false;
+    }
   }
 
   // ── Tocar ──

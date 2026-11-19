@@ -16,10 +16,12 @@ import { nuevaPartida, type GameState } from '../game/GameState';
 import { AssetLoader } from './AssetLoader';
 import { AudioManager } from './AudioManager';
 import { Fader } from './Fader';
+import { GhostHand } from './GhostHand';
 import { HandTracker } from './HandTracker';
 import { Interactables } from './Interactable';
 import { Metrics } from './Metrics';
 import { SceneManager, type DefinicionEscena } from './SceneManager';
+import { formatoTiempo, type StageTimer } from './StageTimer';
 import { TextPanel } from './TextPanel';
 import { WristSkip } from './WristSkip';
 
@@ -37,7 +39,14 @@ export class Juego {
   inter: Interactables;
   audio = new AudioManager();
   fader: Fader;
+  fantasma: GhostHand;
   escenas: SceneManager;
+  /** Etapa jugable en curso (para el cronómetro de debug). */
+  etapa: StageTimer | null = null;
+  /** Tope compartido de las escenas del inicio (lo crea la intro). */
+  topeInicio: StageTimer | null = null;
+  /** Segundos desde que empezó la partida. */
+  tiempoSesion = 0;
   metrics = new Metrics(CONFIG.metricsEndpoint);
   assets = new AssetLoader();
   estado: GameState = nuevaPartida();
@@ -79,6 +88,7 @@ export class Juego {
     this.manos = new HandTracker(this.renderer, this.scene);
     this.inter = new Interactables(this.manos, this.audio);
     this.fader = new Fader(this.scene, this.camara);
+    this.fantasma = new GhostHand(this.scene, this.camara);
     this.muneca = new WristSkip(this.scene, this.manos, () => this.saltar());
 
     this.cartelControles = new TextPanel(t('general.dejaControles'), { ancho: 0.9, tamano: 0.06, fondo: '#1d2433', color: '#ffd166', negrita: true });
@@ -105,6 +115,7 @@ export class Juego {
       alEntrar: (id) => this.metrics.escena(id),
       alReiniciar: () => {
         this.estado = nuevaPartida();
+        this.tiempoSesion = 0;
         this.manos.setPiel('#e9bb98');
       },
     });
@@ -191,10 +202,12 @@ export class Juego {
       }
     }
 
+    this.tiempoSesion += dt;
     this.manos.update(dt);
     this.inter.update(dt);
     this.escenas.update(dt);
     this.muneca.update(dt);
+    this.fantasma.update(dt);
     this.fader.update(dt);
     this.actualizarCartelControles();
     this.actualizarDebug(dt);
@@ -223,7 +236,13 @@ export class Juego {
       const info = this.renderer.info.render;
       const fps = Math.round(this.debugAcum.cuadros / this.debugAcum.t);
       const escena = this.escenas.actual?.id ?? '-';
-      this.debugPanel.setTexto(`FPS ${fps} · draw calls ${info.calls} · triángulos ${(info.triangles / 1000).toFixed(1)}k\nescena ${escena}`);
+      const etapa = this.etapa ? ` · etapa ${formatoTiempo(this.etapa.tiempo)} / ${formatoTiempo(this.etapa.tope)}` : '';
+      // En VR se dibuja cada ojo por separado: el presupuesto (100 draw calls) es por ojo.
+      const ojos = this.renderer.xr.isPresenting ? 2 : 1;
+      this.debugPanel.setTexto(
+        `FPS ${fps} · draw calls por ojo ${Math.round(info.calls / ojos)} · triángulos ${(info.triangles / ojos / 1000).toFixed(1)}k\n` +
+          `escena ${escena} · sesión ${formatoTiempo(this.tiempoSesion)}${etapa}`,
+      );
       this.debugAcum = { t: 0, cuadros: 0 };
     }
     this.delanteDeLaCabeza(this.debugPanel, 0.9, -0.32);

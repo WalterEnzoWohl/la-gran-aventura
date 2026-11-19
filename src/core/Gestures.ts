@@ -37,7 +37,11 @@ export class PinchDetector {
 export class PokeDetector {
   /** Cuánto está hundido el botón (0 a `recorrido`). */
   depth = 0;
-  private armed = true;
+  /**
+   * Arranca desarmado: se arma al ver el dedo afuera. Así un botón que aparece
+   * donde ya estaba el dedo no se activa solo.
+   */
+  private armed = false;
   private cooldown = 0;
 
   constructor(

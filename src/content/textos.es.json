@@ -32,7 +32,8 @@
     "piel": "Piel",
     "ojos": "Ojos",
     "sortear": "Otro nombre",
-    "listo": "¡Listo!"
+    "listo": "¡Listo!",
+    "objetivo": "Elegí cómo son y tocá «¡Listo!»"
   },
   "rasgos": {
     "pelo": {
@@ -64,7 +65,9 @@
     "ojosDe": "los ojos de {nombre}",
     "peloSorpresa": "el pelo {color}, una sorpresa de los abuelos",
     "ojosSorpresa": "los ojos {color}, una sorpresa de los abuelos",
-    "saco": "Sacó {pelo} y {ojos}."
+    "saco": "Sacó {pelo} y {ojos}.",
+    "elegiNombre": "Elegí su nombre",
+    "alegria": "¡Bienvenido a la familia!"
   },
   "bebe": {
     "curiosidad": "Tu bebé ya conoce tu voz: la escuchó durante meses desde la panza.",
@@ -73,7 +76,10 @@
     "levantalo": "Agarrá a tu bebé para levantarlo",
     "palmeale": "Palmeale la espalda 3 veces",
     "panalSucio": "Tirá el pañal sucio al tacho",
-    "panalNuevo": "Poné el pañal nuevo"
+    "panalNuevo": "Poné el pañal nuevo",
+    "eructoBien": "¡Buuurp! Ahora sí, más tranquilo.",
+    "panalListo": "¡Impecable!",
+    "tomando": "Mmm, rico"
   },
   "preadolescente": {
     "curiosidad": "Entre los 6 y los 12 años se recomienda dormir entre 9 y 12 horas.",
@@ -81,12 +87,30 @@
     "noCreo": "Mmm, no creo...",
     "yaEntendi": "¡Ya entendí!",
     "cena": "Poné en el plato verdura y proteína",
-    "chisteFritas": "¡Papas fritas otra vez? Mejor el finde.",
+    "chisteFritas": "¿Papas fritas otra vez? Mejor el finde.",
     "chisteGolosina": "¡Eso es postre!",
     "dormir": "Dejá la tablet en el cargador y apagá la luz",
     "unMinutoMas": "¡Un minuto más!",
     "aTiempo": "¡A tiempo!",
-    "cansado": "Mañana voy a estar re cansado"
+    "cansado": "Mañana voy a estar re cansado",
+    "tarea": "Ayudalo con la tarea: tocá la respuesta correcta",
+    "meAyudas": "¿Me ayudás?",
+    "respuestas": [
+      "15",
+      "12",
+      "5"
+    ],
+    "respuestaCorrecta": "15",
+    "dormirTablet": "Dejá la tablet en el cargador",
+    "dormirLuz": "Apagá la luz",
+    "buenasNoches": "¡Buenas noches!",
+    "rico": "¡Qué rico!",
+    "alimentos": {
+      "verdura": "Verdura",
+      "proteina": "Pollo",
+      "papas": "Papas fritas",
+      "golosina": "Golosina"
+    }
   },
   "adolescente": {
     "curiosidad": "El cerebro adolescente sigue desarrollándose hasta pasados los 20 años. Tu compañía sigue importando.",
@@ -95,9 +119,18 @@
     "llaves": "Agarrá las llaves del perchero",
     "noLeGusto": "¿Y si no le gusto?",
     "consejos": [
-      { "texto": "Sé vos mismo", "respuesta": "Tenés razón. ¡Voy así como soy!" },
-      { "texto": "Respetá siempre lo que el otro quiere", "respuesta": "Obvio. Le voy a preguntar qué quiere hacer ella." },
-      { "texto": "Cualquier cosa, me llamás", "respuesta": "Gracias. Saber que estás me deja más tranquilo." }
+      {
+        "texto": "Sé vos mismo",
+        "respuesta": "Tenés razón. ¡Voy así como soy!"
+      },
+      {
+        "texto": "Respetá siempre lo que el otro quiere",
+        "respuesta": "Obvio. Le voy a preguntar qué quiere hacer ella."
+      },
+      {
+        "texto": "Cualquier cosa, me llamás",
+        "respuesta": "Gracias. Saber que estás me deja más tranquilo."
+      }
     ]
   },
   "final": {
@@ -113,5 +146,17 @@
       "Espacios de primera infancia (contenido provisorio)"
     ],
     "gracias": "¡Gracias por jugar!"
+  },
+  "album": {
+    "embarazo": "La espera",
+    "nacimiento": "¡Llegó!",
+    "unAnio": "1 año",
+    "escuela": "Primer día de clases",
+    "ochoAnios": "8 años",
+    "doceAnios": "12 años",
+    "catorceAnios": "14 años",
+    "quinceAnios": "15 años",
+    "dieciseisAnios": "16 años",
+    "familia": "Nuestra familia"
   }
 }
