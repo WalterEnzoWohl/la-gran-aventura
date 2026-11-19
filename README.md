@@ -2,7 +2,7 @@
 
 Experiencia WebXR para Meta Quest 2, solo con las manos. La especificación vigente está en [Claude.md](Claude.md).
 
-> Estado: **hito 3 (etapa bebé)**. Escenas 01 a 04; la prueba de gestos del hito 1 sigue disponible con `?prueba=1`. El README completo para el equipo llega en el hito 6.
+> Estado: **hito 4 (etapa preadolescente)**. Escenas 01 a 05; la prueba de gestos del hito 1 sigue disponible con `?prueba=1`. El README completo para el equipo llega en el hito 6.
 
 ## Jugar
 
@@ -21,7 +21,7 @@ npm run build      # typecheck + build de producción en dist/
 - **En la PC:** abrir `https://localhost:5173/?debug=1`. Como el navegador no tiene visor, se carga el emulador IWER (solo en desarrollo) con manos emuladas; "Entrar a VR" abre la sesión emulada.
 - **En el Quest 2, sin publicar:** con la PC y el visor en la misma red Wi-Fi, abrir en el navegador del Quest `https://<IP-de-la-PC>:5173/?debug=1`, aceptar la advertencia del certificado y tocar "Entrar a VR".
 
-`?debug=1` muestra FPS, draw calls y triángulos; las teclas 0–9 saltan de escena y la S equivale a "Saltar".
+`?debug=1` muestra FPS, draw calls y triángulos por ojo, y los cronómetros de sesión y etapa. Las teclas 0–4 saltan a una escena (0 intro, 1 personalización, 2 embarazo, 3 bebé, 4 preadolescente) y la S equivale a "Saltar".
 
 ## Estructura
 

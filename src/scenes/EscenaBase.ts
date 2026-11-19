@@ -26,7 +26,7 @@ export abstract class EscenaBase implements Escena {
   private burbuja: TextPanel;
   private finCuriosidad = 0;
   private finBurbuja = 0;
-  private reloj = 0;
+  private tiempoEscena = 0;
   private quitarOyente: (() => void) | null = null;
   protected viva = false;
 
@@ -74,12 +74,12 @@ export abstract class EscenaBase implements Escena {
 
   update(dt: number): void {
     if (!this.viva) return;
-    this.reloj += dt;
+    this.tiempoEscena += dt;
     this.tweens.update(dt);
     this.misiones.update(dt);
     this.pistas.update(dt);
-    if (this.curiosidadPanel.visible && this.reloj >= this.finCuriosidad) this.curiosidadPanel.visible = false;
-    if (this.burbuja.visible && this.reloj >= this.finBurbuja) this.burbuja.visible = false;
+    if (this.curiosidadPanel.visible && this.tiempoEscena >= this.finCuriosidad) this.curiosidadPanel.visible = false;
+    if (this.burbuja.visible && this.tiempoEscena >= this.finBurbuja) this.burbuja.visible = false;
     this.tick(dt);
   }
 
@@ -102,7 +102,7 @@ export abstract class EscenaBase implements Escena {
   protected curiosidad(texto: string, segundos = 6): void {
     this.curiosidadPanel.setTexto(texto);
     this.curiosidadPanel.visible = true;
-    this.finCuriosidad = this.reloj + segundos;
+    this.finCuriosidad = this.tiempoEscena + segundos;
   }
 
   /** Frase del hijo: globo de diálogo en `pos` (coordenadas de la escena) y "voz" provisoria. */
@@ -111,7 +111,7 @@ export abstract class EscenaBase implements Escena {
     this.burbuja.position.copy(pos);
     this.burbuja.lookAt(this.raiz.localToWorld(new Vector3(0, 0.4, 0)));
     this.burbuja.visible = true;
-    this.finBurbuja = this.reloj + segundos;
+    this.finBurbuja = this.tiempoEscena + segundos;
     this.juego.audio.balbuceo(texto, tono);
   }
 

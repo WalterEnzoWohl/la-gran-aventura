@@ -56,6 +56,7 @@ export class Juego {
   alSaltar: (() => void) | null = null;
 
   private reloj = new Timer();
+  private luces: { luz: HemisphereLight | DirectionalLight; base: number }[] = [];
   private muneca: WristSkip;
   private cartelControles: TextPanel;
   private debugPanel: TextPanel | null = null;
@@ -75,10 +76,14 @@ export class Juego {
 
     this.scene.background = new Color('#cfe3ef');
     // Sin sombras en tiempo real: luz hemisférica + una direccional suave.
-    this.scene.add(new HemisphereLight(0xffffff, 0x9a8f80, 2.2));
+    const cielo = new HemisphereLight(0xffffff, 0x9a8f80, 2.2);
     const sol = new DirectionalLight(0xffffff, 1.2);
     sol.position.set(1, 3, 2);
-    this.scene.add(sol);
+    this.scene.add(cielo, sol);
+    this.luces = [
+      { luz: cielo, base: cielo.intensity },
+      { luz: sol, base: sol.intensity },
+    ];
 
     this.camara.position.set(0, 1.6, 0);
     this.camara.lookAt(0, 1.25, -1);
@@ -107,6 +112,7 @@ export class Juego {
 
     this.escenas = new SceneManager(definiciones(this), this.fader, {
       antesDeEntrar: () => {
+        this.ajustarLuz(1);
         this.inter.limpiar();
         this.audio.pararTodo();
         this.alSaltar = null;
@@ -179,6 +185,11 @@ export class Juego {
     this.estacion.position.set(_pos.x, this.alturaPecho, _pos.z);
     this.estacion.rotation.set(0, _euler.y, 0);
     this.estacion.updateMatrixWorld(true);
+  }
+
+  /** Atenúa (o restaura con 1) la iluminación general. Se restaura sola al cambiar de escena. */
+  ajustarLuz(factor: number): void {
+    for (const l of this.luces) l.luz.intensity = l.base * factor;
   }
 
   saltar(): void {

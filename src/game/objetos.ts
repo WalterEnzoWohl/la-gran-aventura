@@ -3,7 +3,7 @@
  * centro (ahí se mide el radio de agarre). Se pueden reemplazar por modelos .glb
  * con AssetLoader usando el mismo nombre.
  */
-import { Group, Mesh, MeshBasicMaterial, Object3D, RingGeometry } from 'three';
+import { BufferGeometry, Group, Mesh, MeshBasicMaterial, Object3D, RingGeometry } from 'three';
 import { GEO, malla } from './primitivas';
 
 export interface Biberon {
@@ -44,7 +44,7 @@ export function crearPanalNuevo(): Group {
   return grupo;
 }
 
-export function crearTablet(): { grupo: Group; pantalla: Mesh } {
+export function crearTablet(): { grupo: Group; pantalla: Mesh<BufferGeometry, MeshBasicMaterial> } {
   const grupo = new Group();
   grupo.name = 'tablet';
   malla(grupo, GEO.caja, '#2b2f3a', { esc: [0.16, 0.012, 0.11] });
