@@ -218,12 +218,12 @@ export function liberar(raiz: Object3D): void {
     }
     const m = o as Mesh;
     if (!m.isMesh) return;
-    // Las geometrías y materiales compartidos (primitivas.ts) se reutilizan entre escenas.
+    // Las primitivas y los GLB reutilizan recursos entre escenas.
     if (!m.geometry?.userData.compartida) m.geometry?.dispose();
     const mats = (Array.isArray(m.material) ? m.material : [m.material]) as (Material & { map?: Texture | null })[];
     for (const mat of mats) {
       if (mat.userData.compartido) continue;
-      mat.map?.dispose();
+      if (!mat.map?.userData.compartida) mat.map?.dispose();
       mat.dispose();
     }
   });

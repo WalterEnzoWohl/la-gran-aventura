@@ -27,7 +27,7 @@ export class Intro extends EscenaInicio {
     const piso = this.juego.pisoY;
     crearHabitacion(this.raiz, piso, { piso: '#e6d8c3', pared: '#f4ede2', zocalo: '#d8c7ad' });
     ventana(this.raiz, -1.2, piso + 1.5, PARED_FONDO);
-    planta(this.raiz, 1.6, piso, -1.9);
+    planta(this.juego.assets, this.raiz, 1.6, piso, -1.9);
 
     const tarjeta = new TextPanel(`${t('intro.dato')}\n\n${t('intro.invitacion')}`, {
       ancho: 1.3,

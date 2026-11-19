@@ -112,7 +112,7 @@
     "rico": "¡Qué rico!",
     "alimentos": {
       "verdura": "Verdura",
-      "proteina": "Pollo",
+      "proteina": "Bife",
       "papas": "Papas fritas",
       "golosina": "Golosina"
     }
@@ -158,6 +158,7 @@
       "Espacios de primera infancia (contenido provisorio)"
     ],
     "gracias": "¡Gracias por jugar!",
+    "creditosModelos": "Modelos 3D: Kenney.nl",
     "jugarDeNuevo": "Jugar de nuevo"
   },
   "album": {

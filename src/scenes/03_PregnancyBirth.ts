@@ -37,8 +37,8 @@ export class PregnancyBirth extends EscenaInicio {
     // Living luminoso.
     crearHabitacion(this.living, piso, { piso: '#d8b98f', pared: '#fbe9d0', zocalo: '#e2c9a5' });
     ventana(this.living, -1.1, piso + 1.5, PARED_FONDO, 1.3, 1.0);
-    sofa(this.living, piso, piso + 0.45, 0.4, -1.95);
-    planta(this.living, -1.9, piso, -1.6);
+    sofa(this.juego.assets, this.living, piso, piso + 0.45, 0.4, -1.95);
+    planta(this.juego.assets, this.living, -1.9, piso, -1.6);
     cuadro(this.living, 1.4, piso + 1.65, PARED_FONDO, '#f4a6a6');
 
     // Gesta la mujer de la pareja (la pareja es siempre un hombre y una mujer).

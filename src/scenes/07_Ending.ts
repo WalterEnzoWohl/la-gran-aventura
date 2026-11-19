@@ -24,8 +24,8 @@ export class Ending extends EscenaBase {
     const piso = this.juego.pisoY;
     crearHabitacion(this.raiz, piso, { piso: '#d8b98f', pared: '#fbe9d0', zocalo: '#e2c9a5' });
     ventana(this.raiz, 2.43, piso + 1.5, -1.2, 0.9, 0.9).rotation.y = -Math.PI / 2;
-    sofa(this.raiz, piso, piso + 0.45, -1.2, -1.95);
-    planta(this.raiz, 1.9, piso, -1.9);
+    sofa(this.juego.assets, this.raiz, piso, piso + 0.45, -1.2, -1.95);
+    planta(this.juego.assets, this.raiz, 1.9, piso, -1.9);
 
     // El álbum completo, pegado en la pared del fondo.
     const fotos = fotosFinal(this.juego.estado);
@@ -88,7 +88,7 @@ export class Ending extends EscenaBase {
     // Programas de la Ciudad y agradecimiento.
     const programas = TEXTOS.final.programas.map((p) => `• ${p}`).join('\n');
     this.texto.estilo.alinear = 'left';
-    this.texto.setTexto(`${t('final.programasTitulo')}\n${programas}\n\n${t('final.gracias')}`);
+    this.texto.setTexto(`${t('final.programasTitulo')}\n${programas}\n\n${t('final.gracias')}\n${t('final.creditosModelos')}`);
     this.juego.audio.sfx('exito');
     this.juego.metrics.terminarSesion();
     this.botonDeNuevo.grupo.visible = true;

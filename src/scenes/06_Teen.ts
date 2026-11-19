@@ -18,7 +18,7 @@ import type { Grabbable } from '../core/Interactable';
 import { TextPanel } from '../core/TextPanel';
 import { ease } from '../core/Tweens';
 import { crearPersona, ROPA, type Persona } from '../game/characters';
-import { crearHabitacion, mesa, PARED_FONDO, planta } from '../game/escenarios';
+import { crearHabitacion, mesa, mueble, PARED_FONDO, planta } from '../game/escenarios';
 import { pick } from '../game/GameState';
 import { heredar } from '../game/inheritance';
 import { crearLlaves, crearMaquina, crearPomo } from '../game/objetos';
@@ -104,8 +104,10 @@ export class Teen extends EscenaEtapa {
     crearHabitacion(g, piso, { piso: '#d5dde3', pared: '#cfe8ef', zocalo: '#a9c6d1' });
     // Azulejos y espejo decorativo (sin reflejo).
     malla(g, GEO.caja, '#e7f3f6', { pos: [0, piso + 0.6, PARED_FONDO + 0.01], esc: [4.8, 1.2, 0.02] });
-    malla(g, GEO.caja, '#9fb8c4', { pos: [-0.9, 0.45, PARED_FONDO + 0.02], esc: [0.7, 0.6, 0.02] });
-    planta(g, 1.9, piso, -1.7);
+    if (!mueble(this.juego.assets, g, 'bathroomMirror', -0.9, 0.15, PARED_FONDO + 0.04, 0.5, 0.6, 0.06)) {
+      malla(g, GEO.caja, '#9fb8c4', { pos: [-0.9, 0.45, PARED_FONDO + 0.02], esc: [0.7, 0.6, 0.02] });
+    }
+    planta(this.juego.assets, g, 1.9, piso, -1.7);
 
     // El hijo sentado, con la cara al alcance y la cabeza un poco levantada hacia el jugador.
     this.hijoBano = this.hijo('sentado');
@@ -118,7 +120,7 @@ export class Teen extends EscenaEtapa {
     malla(g, GEO.cilindro, '#8a9ba8', { pos: [0, (piso + cadera) / 2 - 0.02, -0.65], esc: [0.17, cadera - piso - 0.04, 0.17] });
 
     // Mesada con la máquina y el pomo, a la derecha.
-    mesa(g, piso, -0.12, 0.33, -0.36, 0.34, 0.3, '#f4f4f4');
+    mesa(this.juego.assets, g, piso, -0.12, 0.33, -0.36, 0.34, 0.3, '#f4f4f4', 'sideTable');
     this.maquina = crearMaquina();
     this.juego.assets.vestir(this.maquina.grupo, 'maquina');
     this.maquina.grupo.position.set(0.27, -0.12 + 0.07, -0.38);
@@ -207,9 +209,11 @@ export class Teen extends EscenaEtapa {
     malla(g, GEO.caja, '#7a4e2d', { pos: [0.6, piso + 1.05, PARED_FONDO + 0.03], esc: [0.95, 2.1, 0.05] });
     malla(g, GEO.esfera, '#d4af37', { pos: [0.25, piso + 1.0, PARED_FONDO + 0.07], esc: 0.03 });
     // Perchero al alcance, a la izquierda.
-    malla(g, GEO.cilindro, '#5c3b22', { pos: [-0.3, (piso + 0.25) / 2, -0.55], esc: [0.02, 0.25 - piso, 0.02] });
-    malla(g, GEO.cilindro, '#5c3b22', { pos: [-0.3, 0.13, -0.47], esc: [0.01, 0.12, 0.01], rot: [Math.PI / 2, 0, 0] });
-    malla(g, GEO.esfera, '#c1121f', { pos: [-0.38, 0.05, -0.58], esc: [0.12, 0.2, 0.06] });
+    // El gancho hacia el jugador está a 0,668 m en el modelo original.
+    if (!mueble(this.juego.assets, g, 'coatRackStanding', -0.3, piso, -0.55, 0.27, (0.12 - piso) * 0.77 / 0.668, 0.27)) {
+      malla(g, GEO.cilindro, '#5c3b22', { pos: [-0.3, (piso + 0.25) / 2, -0.55], esc: [0.02, 0.25 - piso, 0.02] });
+      malla(g, GEO.cilindro, '#5c3b22', { pos: [-0.3, 0.13, -0.47], esc: [0.01, 0.12, 0.01], rot: [Math.PI / 2, 0, 0] });
+    }
     this.llaves = this.juego.assets.vestir(crearLlaves(), 'llaves');
     this.llaves.position.set(-0.3, 0.07, -0.42);
     g.add(this.llaves);

@@ -28,11 +28,11 @@ function serviceWorker(): Plugin {
     // Al final, para que las páginas HTML ya estén en el bundle.
     enforce: 'post',
     generateBundle(_opciones, bundle) {
-      const publicos = listar(join(raiz, 'public')).filter((f) => !f.endsWith('.glb') && !f.endsWith('.mp3'));
+      const publicos = listar(join(raiz, 'public')).sort();
       const archivos = ['./', ...Object.keys(bundle), ...publicos].map((f) => (f === './' ? f : './' + f));
       const hash = createHash('sha256');
       for (const f of Object.keys(bundle)) hash.update(f);
-      for (const f of publicos) hash.update(f + readFileSync(join(raiz, 'public', f)).length);
+      for (const f of publicos) hash.update(f).update(readFileSync(join(raiz, 'public', f)));
       const codigo = readFileSync(join(raiz, 'sw-plantilla.js'), 'utf8')
         .replace('__VERSION__', hash.digest('hex').slice(0, 12))
         .replace('__ARCHIVOS__', JSON.stringify([...new Set(archivos)], null, 2));

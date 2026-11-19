@@ -1,35 +1,17 @@
 /*
  * Service worker de La Gran Aventura (lo genera `npm run build` a partir de esta plantilla).
  * Guarda todo el juego en caché al instalarse: después de abrirlo una vez con internet,
- * funciona sin conexión. También guarda los modelos y la música listados en
- * models/modelos.json y audio/musica.json.
+ * funciona sin conexión. Incluye los modelos, sus texturas externas y la música de public/.
  */
 const VERSION = '__VERSION__';
 const ARCHIVOS = __ARCHIVOS__;
 const CACHE = 'lga-' + VERSION;
-
-async function listados(cache) {
-  const extras = [
-    ['models/modelos.json', 'models/', '.glb'],
-    ['audio/musica.json', 'audio/', '.mp3'],
-  ];
-  for (const [lista, carpeta, extension] of extras) {
-    try {
-      const res = await fetch(lista, { cache: 'no-cache' });
-      const nombres = res.ok ? await res.json() : [];
-      if (Array.isArray(nombres) && nombres.length) await cache.addAll(nombres.map((n) => carpeta + n + extension));
-    } catch (e) {
-      // Si falta algún archivo, el juego usa primitivas o silencio.
-    }
-  }
-}
 
 self.addEventListener('install', (evento) => {
   evento.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE);
       await cache.addAll(ARCHIVOS);
-      await listados(cache);
       await self.skipWaiting();
     })(),
   );

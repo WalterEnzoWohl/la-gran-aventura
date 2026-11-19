@@ -80,14 +80,14 @@ export class Baby extends EscenaEtapa {
     crearHabitacion(this.raiz, piso, { piso: '#d9c4a3', pared: '#dceefa', zocalo: '#bcd6ea' });
     ventana(this.raiz, 1.1, piso + 1.5, PARED_FONDO);
     cuadro(this.raiz, -1.2, piso + 1.6, PARED_FONDO, '#ffe08a', 0.4, 0.4);
-    planta(this.raiz, -1.9, piso, -1.7);
+    planta(this.juego.assets, this.raiz, -1.9, piso, -1.7);
     this.raiz.add(this.cuarto, this.cambiador, this.salaAlbum, this.hombro, this.progreso.grupo);
     this.cambiador.visible = false;
     this.salaAlbum.visible = false;
 
     // Cuna con el bebé acostado (cabeza a la izquierda) y la mesada con el biberón.
     cuna(this.cuarto, piso, SUPERFICIE, 0, -0.52);
-    mesa(this.cuarto, piso, -0.1, 0.42, -0.38, 0.3, 0.3, '#f4f4f4');
+    mesa(this.juego.assets, this.cuarto, piso, -0.1, 0.42, -0.38, 0.3, 0.3, '#f4f4f4', 'sideTable');
     this.bebe = crearBebe(coloresHijo(estado.hijo));
     this.soporte.add(this.bebe.grupo);
     this.acostar(this.cuarto, new Vector3(0, SUPERFICIE + 0.085, -0.52));
@@ -114,8 +114,8 @@ export class Baby extends EscenaEtapa {
 
   private armarCambiador(piso: number): void {
     const c = this.cambiador;
-    mesa(c, piso, SUPERFICIE, 0, -0.5, 0.78, 0.46, '#f2e6d0');
-    malla(c, GEO.caja, '#a9d3f0', { pos: [0, SUPERFICIE + 0.015, -0.5], esc: [0.62, 0.03, 0.4] });
+    mesa(this.juego.assets, c, piso, SUPERFICIE, 0, -0.5, 0.78, 0.46, '#f2e6d0');
+    malla(c, GEO.redondeada, '#a9d3f0', { pos: [0, SUPERFICIE + 0.015, -0.5], esc: [0.62, 0.03, 0.4] });
     tacho(c, piso, -0.18, 0.42, -0.4);
 
     this.panalSucio = crearPanalSucio();

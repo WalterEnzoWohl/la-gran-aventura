@@ -4,12 +4,12 @@
  * `public/models/modelos.json` lista los modelos disponibles (por ejemplo ["biberon"]).
  * Al arrancar se precargan `public/models/<nombre>.glb`; cada objeto del juego pide
  * su modelo por nombre y, si no está en la lista, se usa la versión con primitivas.
- * Así el arte final se agrega más adelante sin tocar código.
+ * Los muebles de Kenney se ajustan a su estación en escenarios.ts.
  *
  * Convención de los .glb: en metros, +y hacia arriba, el frente hacia +z y el origen
  * en el centro del objeto (ahí se mide el radio de agarre).
  */
-import { Mesh, Object3D } from 'three';
+import { Mesh, Object3D, type Material, type Texture } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /** Nombres de los objetos que se pueden reemplazar por un .glb. */
@@ -17,6 +17,20 @@ export const MODELOS_REEMPLAZABLES = [
   'sonajero', 'biberon', 'panalSucio', 'panalNuevo', 'tablet', 'cargador', 'plato',
   'verdura', 'proteina', 'papas', 'golosina', 'maquina', 'pomo', 'llaves',
 ] as const;
+
+/** Identifica los recursos que el cargador reutiliza entre escenas. */
+function marcarCompartidos(modelo: Object3D): void {
+  modelo.traverse((o) => {
+    const mesh = o as Mesh;
+    if (!mesh.isMesh) return;
+    mesh.geometry.userData.compartida = true;
+    const materiales = (Array.isArray(mesh.material) ? mesh.material : [mesh.material]) as (Material & { map?: Texture | null })[];
+    for (const mat of materiales) {
+      mat.userData.compartido = true;
+      if (mat.map) mat.map.userData.compartida = true;
+    }
+  });
+}
 
 export class AssetLoader {
   private loader = new GLTFLoader();
@@ -44,6 +58,7 @@ export class AssetLoader {
       nombres.map(async (nombre) => {
         try {
           const gltf = await this.loader.loadAsync(this.base + nombre + '.glb');
+          marcarCompartidos(gltf.scene);
           this.modelos.set(nombre, gltf.scene);
         } catch (e) {
           console.warn(`[modelos] No se pudo cargar ${nombre}.glb; se usan primitivas.`, e);

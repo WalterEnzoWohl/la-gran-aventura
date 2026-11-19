@@ -71,7 +71,9 @@ Nombres disponibles: `sonajero`, `biberon`, `panalSucio`, `panalNuevo`, `tablet`
 
 Convención: en **metros**, +Y hacia arriba, frente hacia +Z y **origen en el centro del objeto** (ahí se mide el radio de agarre). Se recomiendan modelos low-poly CC0 (Kenney, Quaternius) en glTF binario, con texturas de 1024 px como máximo. Si un modelo falta o no carga, se usa la versión con primitivas.
 
-Los personajes y los muebles (que cambian de tamaño según la altura del jugador) se arman con primitivas en `src/game/characters/` y `src/game/escenarios.ts`. Sus colores de pelo, piel y ojos son materiales llamados `pelo`, `piel` y `ojos`.
+El juego incluye 13 modelos CC0 de Kenney. Los alimentos y el plato vienen de *Food Kit*: `broccoli` → `verdura`, `meat-cooked` → `proteina`, `fries` → `papas`, `lollypop` → `golosina` y `plate` → `plato`. Se ajustaron a metros y comparten `public/models/Textures/colormap.png`. El *Furniture Kit* aporta las plantas, sofás, mesas, escritorio, cama, espejo y perchero. `src/game/escenarios.ts` ajusta los muebles a la altura que se calibra en el visor.
+
+Los kits completos están en `assets_originales/`. El build incluye solo lo que está en `public/` y guarda los GLB y su textura en la caché sin conexión. La cuna, el cambiador y los objetos específicos se completan con primitivas. Los personajes se generan en `src/game/characters/`, con materiales llamados `pelo`, `piel` y `ojos`.
 
 ### Música
 
@@ -130,7 +132,7 @@ sw-plantilla.js   service worker (lo completa el build)
 
 ### Rendimiento
 
-Presupuesto en el Quest 2: 72 fps, menos de 100 draw calls y 100.000 triángulos por escena, sin sombras en tiempo real. Máximos medidos por ojo (con `?debug=1`):
+Presupuesto en el Quest 2: 72 fps, menos de 100 draw calls y 100.000 triángulos por escena, sin sombras en tiempo real. Máximos medidos por ojo con `?debug=1` antes de incorporar los modelos de Kenney:
 
 | Escena | Draw calls por ojo | Triángulos por ojo |
 | --- | --- | --- |

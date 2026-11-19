@@ -6,7 +6,7 @@
  *  3. Dormir: la tablet al cargador y apagar la luz.
  * Si termina antes de las 22:00, "¡A tiempo!"; si no, el hijo bosteza y el juego sigue igual.
  */
-import { Group, Mesh, MeshBasicMaterial, Object3D, Vector3 } from 'three';
+import { Box3, Group, Mesh, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { NOMBRES_BEBE, PALETAS } from '../content/config';
 import { t, TEXTOS } from '../content/textos';
 import { crearBoton } from '../core/Button';
@@ -71,15 +71,15 @@ export class PreTeen extends EscenaEtapa {
     const piso = this.juego.pisoY;
     crearHabitacion(this.raiz, piso, { piso: '#c9a27c', pared: '#f6e3c9', zocalo: '#d9bf9c' });
     ventana(this.raiz, 1.15, piso + 1.5, PARED_FONDO);
-    planta(this.raiz, 1.95, piso, -1.6);
+    planta(this.juego.assets, this.raiz, 1.95, piso, -1.6);
     this.raiz.add(this.escritorio, this.cocina, this.dormitorio, this.salaAlbum);
     this.cocina.visible = this.dormitorio.visible = this.salaAlbum.visible = false;
 
     // Reloj de pared a la izquierda, con la hora también en números.
     // A la izquierda del cartel de objetivo, para que no se tapen.
-    this.reloj = relojPared(this.raiz, -1.3, 0.45, PARED_FONDO + 0.02);
+    this.reloj = relojPared(this.raiz, -1.3, 0.7, PARED_FONDO + 0.02);
     this.hora = new TextPanel('20:30', { ancho: 0.3, tamano: 0.07, fondo: 'rgba(29,36,51,0.85)', negrita: true });
-    this.hora.position.set(-1.3, 0.12, PARED_FONDO + 0.03);
+    this.hora.position.set(-1.3, 0.37, PARED_FONDO + 0.03);
     this.raiz.add(this.hora);
 
     // El objetivo un poco más arriba, para no tapar la cabeza del hijo.
@@ -112,7 +112,7 @@ export class PreTeen extends EscenaEtapa {
   // ── 1. Tarea ──
   private armarEscritorio(piso: number): void {
     const g = this.escritorio;
-    mesa(g, piso, MESA, 0, -0.62, 0.95, 0.55, '#b98a5e');
+    mesa(this.juego.assets, g, piso, MESA, 0, -0.62, 0.95, 0.55, '#b98a5e', 'desk');
     malla(g, GEO.caja, '#ffffff', { pos: [0.05, MESA + 0.006, -0.72], esc: [0.3, 0.012, 0.2], rot: [0, 0.2, 0] });
     malla(g, GEO.caja, '#e04b4b', { pos: [-0.28, MESA + 0.025, -0.75], esc: [0.2, 0.05, 0.15] });
     this.hijoTarea = this.sentarHijo(g, piso, -1.0);
@@ -151,10 +151,10 @@ export class PreTeen extends EscenaEtapa {
   // ── 2. Cena ──
   private armarCocina(piso: number): void {
     const g = this.cocina;
-    mesa(g, piso, MESA, 0, -0.62, 1.0, 0.6, '#d9d2c5');
+    mesa(this.juego.assets, g, piso, MESA, 0, -0.62, 1.0, 0.6, '#d9d2c5');
     this.hijoCena = this.sentarHijo(g, piso, -1.05);
     const plato = this.juego.assets.vestir(crearPlato(), 'plato');
-    plato.position.set(0, MESA + 0.012, -0.5);
+    plato.position.set(0, MESA - new Box3().setFromObject(plato, true).min.y, -0.5);
     g.add(plato);
     this.centroPlato.position.set(0, MESA + 0.04, -0.5);
     g.add(this.centroPlato);
@@ -163,11 +163,11 @@ export class PreTeen extends EscenaEtapa {
     const xs = [-0.34, -0.18, 0.18, 0.34];
     orden.forEach((tipo, i) => {
       const a = this.juego.assets.vestir(crearAlimento(tipo), tipo);
-      a.position.set(xs[i], MESA + 0.04, -0.34);
+      a.position.set(xs[i], MESA - new Box3().setFromObject(a, true).min.y, -0.375);
       g.add(a);
       this.alimentos.set(tipo, this.juego.inter.addGrabbable(a, { radio: 0.07 }));
       const etiqueta = new TextPanel(t(`preadolescente.alimentos.${tipo}`), { ancho: 0.15, tamano: 0.02, fondo: 'rgba(255,255,255,0.9)', color: '#1d2433', negrita: true, padding: 0.006 });
-      etiqueta.position.set(xs[i], MESA + 0.004, -0.27);
+      etiqueta.position.set(xs[i], MESA + 0.004, -0.305);
       etiqueta.rotation.x = -Math.PI / 2 + 0.5;
       g.add(etiqueta);
     });
@@ -189,8 +189,10 @@ export class PreTeen extends EscenaEtapa {
     if (!tipo) return;
     if (tipo === 'verdura' || tipo === 'proteina') {
       this.enPlato.add(tipo);
-      // Cada cosa en su lado del plato.
-      g.obj.position.x += tipo === 'verdura' ? -0.045 : 0.045;
+      // Apoyar cada comida en su lado, con la misma orientación que en la mesa.
+      g.obj.position.x += tipo === 'verdura' ? -0.051 : 0.051;
+      g.obj.position.y = g.casa.pos.y + 0.014;
+      g.obj.quaternion.copy(g.casa.quat);
       this.juego.audio.sfx('pop');
       if (this.enPlato.size === 2) this.decir(t('preadolescente.rico'), this.globo(this.hijoCena), 2.5);
       return;
@@ -213,7 +215,7 @@ export class PreTeen extends EscenaEtapa {
     camaGrupo.position.set(0, 0, -0.95);
     camaGrupo.rotation.y = Math.PI / 2;
     g.add(camaGrupo);
-    cama(camaGrupo, piso, colchon, 0, 0, '#5b8fd1', 0.0, 0.9);
+    cama(this.juego.assets, camaGrupo, piso, colchon, 0, 0, '#5b8fd1', 0.0, 0.9);
     cuadro(g, 0.2, piso + 1.6, PARED_FONDO, '#a7c7e7', 0.5, 0.35);
 
     // Hijo acostado boca arriba, cabeza a la izquierda, cerca del borde de la cama.
@@ -234,7 +236,7 @@ export class PreTeen extends EscenaEtapa {
     this.agarreTablet = this.juego.inter.addGrabbable(this.tablet.grupo, { radio: 0.08 });
 
     // Mesa de luz con el cargador y el velador, adelante a la derecha.
-    mesa(g, piso, -0.1, 0.45, -0.3, 0.3, 0.28, '#a07650');
+    mesa(this.juego.assets, g, piso, -0.1, 0.45, -0.3, 0.3, 0.28, '#a07650', 'sideTable');
     const cargador = this.juego.assets.vestir(crearCargador(), 'cargador');
     cargador.position.set(0.42, -0.1 + 0.008, -0.3);
     g.add(cargador);

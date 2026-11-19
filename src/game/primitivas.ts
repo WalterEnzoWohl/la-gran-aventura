@@ -7,6 +7,7 @@ import {
   BoxGeometry, BufferGeometry, ConeGeometry, CylinderGeometry, Material, Mesh, MeshLambertMaterial, Object3D,
   SphereGeometry, TorusGeometry,
 } from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 function compartida<T extends BufferGeometry>(g: T): T {
   g.userData.compartida = true;
@@ -15,6 +16,7 @@ function compartida<T extends BufferGeometry>(g: T): T {
 
 export const GEO = {
   caja: compartida(new BoxGeometry(1, 1, 1)),
+  redondeada: compartida(new RoundedBoxGeometry(1, 1, 1, 1, 0.14)),
   esfera: compartida(new SphereGeometry(1, 16, 12)),
   esferaFina: compartida(new SphereGeometry(1, 24, 16)),
   /** Media esfera (casquete de pelo). */

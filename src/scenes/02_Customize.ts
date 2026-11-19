@@ -61,7 +61,7 @@ export class Customize extends EscenaInicio {
     const piso = this.juego.pisoY;
     crearHabitacion(this.raiz, piso, { piso: '#d9c9b0', pared: '#e8eef5', zocalo: '#c9d3df' });
     cuadro(this.raiz, -1.3, piso + 1.6, PARED_FONDO, '#f2b880');
-    planta(this.raiz, 1.9, piso, -1.8);
+    planta(this.juego.assets, this.raiz, 1.9, piso, -1.8);
 
     this.juego.manos.setPiel(coloresPersonaje(this.juego.estado.jugador).piel);
     // El objetivo arriba de las cabezas de los personajes.
