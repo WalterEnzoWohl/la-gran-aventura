@@ -9,7 +9,7 @@ import { Box3, CanvasTexture, Group, Mesh, MeshBasicMaterial, Object3D, PlaneGeo
 import type { AssetLoader } from '../core/AssetLoader';
 import { GEO, malla } from './primitivas';
 
-/** z de la cara interna de la pared del fondo (para ventanas y cuadros). */
+/** z para colgar detalles, 2 cm delante de la pared del fondo. */
 export const PARED_FONDO = -2.33;
 
 export interface ColoresHabitacion {
@@ -44,9 +44,10 @@ export function crearHabitacion(padre: Object3D, piso: number, c: ColoresHabitac
   const y = piso + alto / 2;
   malla(g, GEO.caja, c.pared, { pos: [0, y, -fondo / 2 - 0.2], esc: [ancho, alto, 0.1] });
   malla(g, GEO.caja, c.pared, { pos: [0, y, fondo / 2 - 0.2], esc: [ancho, alto, 0.1] });
-  malla(g, GEO.caja, c.pared, { pos: [-ancho / 2, y, -0.2], esc: [0.1, alto, fondo] });
-  malla(g, GEO.caja, c.pared, { pos: [ancho / 2, y, -0.2], esc: [0.1, alto, fondo] });
-  if (c.zocalo) malla(g, GEO.caja, c.zocalo, { pos: [0, piso + 0.05, -fondo / 2 - 0.14], esc: [ancho, 0.1, 0.03] });
+  // Los laterales terminan contra las otras paredes, sin solaparse en las esquinas.
+  malla(g, GEO.caja, c.pared, { pos: [-ancho / 2, y, -0.2], esc: [0.1, alto, fondo - 0.1] });
+  malla(g, GEO.caja, c.pared, { pos: [ancho / 2, y, -0.2], esc: [0.1, alto, fondo - 0.1] });
+  if (c.zocalo) malla(g, GEO.caja, c.zocalo, { pos: [0, piso + 0.045, -fondo / 2 - 0.14], esc: [ancho - 0.102, 0.1, 0.03] });
   return g;
 }
 
@@ -56,8 +57,14 @@ export function ventana(padre: Object3D, x: number, y: number, z: number, ancho 
   padre.add(g);
   malla(g, GEO.caja, '#ffffff', { esc: [ancho + 0.1, alto + 0.1, 0.04] });
   malla(g, GEO.caja, '#bfe3f7', { pos: [0, 0, 0.022], esc: [ancho, alto, 0.01] });
-  malla(g, GEO.caja, '#ffffff', { pos: [0, 0, 0.03], esc: [0.03, alto, 0.01] });
-  malla(g, GEO.caja, '#ffffff', { pos: [0, 0, 0.03], esc: [ancho, 0.03, 0.01] });
+  const barra = 0.03;
+  const tramo = (ancho - barra) / 2 - 0.002;
+  const frente = 0.031;
+  malla(g, GEO.caja, '#ffffff', { pos: [0, 0, frente], esc: [barra, alto - 0.004, 0.014] });
+  // Cada tramo termina en el montante vertical. Así se ve una cruz sin caras duplicadas.
+  for (const lado of [-1, 1]) {
+    malla(g, GEO.caja, '#ffffff', { pos: [lado * (tramo + barra) / 2, 0, frente], esc: [tramo, barra, 0.014] });
+  }
   return g;
 }
 
@@ -80,7 +87,7 @@ export function mesa(
   const h = alto - 0.04 - piso;
   if (h > 0.02) {
     for (const dx of [-1, 1]) for (const dz of [-1, 1]) {
-      malla(g, GEO.caja, '#8b6142', { pos: [x + dx * (ancho / 2 - 0.05), piso + h / 2, z + dz * (fondo / 2 - 0.05)], esc: [0.05, h, 0.05] });
+      malla(g, GEO.caja, '#8b6142', { pos: [x + dx * (ancho / 2 - 0.027), piso + h / 2, z + dz * (fondo / 2 - 0.027)], esc: [0.05, h, 0.05] });
     }
   }
   return g;
@@ -118,8 +125,8 @@ export function sofa(assets: AssetLoader, padre: Object3D, piso: number, asiento
   // El asiento del GLB está a 0,23 m y el respaldo a 0,4 m.
   if (mueble(assets, g, 'loungeDesignSofa', x, piso, z, 1.6, base * 0.4 / 0.23, 0.7)) return g;
   malla(g, GEO.caja, color, { pos: [x, piso + base / 2, z], esc: [1.6, base, 0.7] });
-  malla(g, GEO.caja, color, { pos: [x, asiento + 0.3, z - 0.3], esc: [1.6, 0.6, 0.15] });
-  for (const dx of [-1, 1]) malla(g, GEO.caja, color, { pos: [x + dx * 0.78, asiento + 0.12, z], esc: [0.16, 0.3, 0.7] });
+  malla(g, GEO.caja, color, { pos: [x, asiento + 0.3, z - 0.3], esc: [1.59, 0.6, 0.15] });
+  for (const dx of [-1, 1]) malla(g, GEO.caja, color, { pos: [x + dx * 0.78, asiento + 0.12, z], esc: [0.16, 0.3, 0.68] });
   malla(g, GEO.caja, '#f2d388', { pos: [x - 0.45, asiento + 0.15, z - 0.18], esc: [0.3, 0.3, 0.1], rot: [0.2, 0, 0.1] });
   return g;
 }
@@ -128,9 +135,10 @@ export function tacho(padre: Object3D, piso: number, boca: number, x: number, z:
   const g = new Group();
   padre.add(g);
   const h = boca - piso;
-  malla(g, GEO.cilindro, '#6c9a8b', { pos: [x, piso + h / 2, z], esc: [0.13, h, 0.13] });
-  malla(g, GEO.cilindro, '#2f3b38', { pos: [x, boca + 0.002, z], esc: [0.115, 0.004, 0.115] });
-  malla(g, GEO.aro, '#4f7b6d', { pos: [x, boca, z], esc: 0.13, rot: [Math.PI / 2, 0, 0] });
+  const radio = 0.105;
+  malla(g, GEO.cilindro, '#6c9a8b', { pos: [x, piso + h / 2, z], esc: [radio, h, radio] });
+  malla(g, GEO.cilindro, '#2f3b38', { pos: [x, boca + 0.002, z], esc: [radio * 0.89, 0.005, radio * 0.89] });
+  malla(g, GEO.aro, '#4f7b6d', { pos: [x, boca, z], esc: radio, rot: [Math.PI / 2, 0, 0] });
   return g;
 }
 
@@ -150,7 +158,7 @@ export function cama(
   } else {
     malla(g, GEO.caja, '#a07650', { pos: [x, piso + h / 2 - 0.05, z], esc: [1.0, h - 0.1, 1.9] });
     malla(g, GEO.caja, '#fafafa', { pos: [x, colchon - 0.06, z], esc: [0.95, 0.12, 1.85] });
-    malla(g, GEO.caja, '#a07650', { pos: [x, colchon + 0.2, z - 0.97], esc: [1.0, 0.9, 0.06] });
+    malla(g, GEO.caja, '#a07650', { pos: [x, colchon + 0.2, z - 0.97], esc: [0.99, 0.9, 0.06] });
     malla(g, GEO.caja, '#ffffff', { pos: [x, colchon + 0.04, z - 0.75], esc: [0.6, 0.1, 0.3] });
   }
   // Edredón grueso: tapa las piernas de quien está acostado.

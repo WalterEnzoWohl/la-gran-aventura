@@ -114,9 +114,11 @@ export class Baby extends EscenaEtapa {
 
   private armarCambiador(piso: number): void {
     const c = this.cambiador;
-    mesa(this.juego.assets, c, piso, SUPERFICIE, 0, -0.5, 0.78, 0.46, '#f2e6d0');
+    const tachoX = 0.47;
+    const tachoZ = -0.34;
+    mesa(this.juego.assets, c, piso, SUPERFICIE, -0.04, -0.5, 0.78, 0.46, '#f2e6d0');
     malla(c, GEO.redondeada, '#a9d3f0', { pos: [0, SUPERFICIE + 0.015, -0.5], esc: [0.62, 0.03, 0.4] });
-    tacho(c, piso, -0.18, 0.42, -0.4);
+    tacho(c, piso, -0.18, tachoX, tachoZ);
 
     this.panalSucio = crearPanalSucio();
     this.juego.assets.vestir(this.panalSucio.grupo, 'panalSucio');
@@ -124,7 +126,7 @@ export class Baby extends EscenaEtapa {
     c.add(this.panalSucio.grupo);
     this.agarreSucio = this.juego.inter.addGrabbable(this.panalSucio.grupo, { radio: 0.08 });
     const bocaTacho = new Object3D();
-    bocaTacho.position.set(0.42, -0.12, -0.4);
+    bocaTacho.position.set(tachoX, -0.12, tachoZ);
     c.add(bocaTacho);
     this.zonaTacho = this.juego.inter.addZona(bocaTacho, {
       acepta: (g) => g === this.agarreSucio,

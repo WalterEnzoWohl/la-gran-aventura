@@ -97,7 +97,7 @@ export class Teen extends EscenaEtapa {
     const g = this.bano;
     crearHabitacion(g, piso, { piso: '#d5dde3', pared: '#cfe8ef', zocalo: '#a9c6d1' });
     // Azulejos y espejo decorativo (sin reflejo).
-    malla(g, GEO.caja, '#e7f3f6', { pos: [0, piso + 0.6, PARED_FONDO + 0.01], esc: [4.8, 1.2, 0.02] });
+    malla(g, GEO.caja, '#e7f3f6', { pos: [0, piso + 0.598, PARED_FONDO + 0.01], esc: [4.8, 1.2, 0.02] });
     if (!mueble(this.juego.assets, g, 'bathroomMirror', -0.9, 0.15, PARED_FONDO + 0.04, 0.5, 0.6, 0.06)) {
       malla(g, GEO.caja, '#9fb8c4', { pos: [-0.9, 0.45, PARED_FONDO + 0.02], esc: [0.7, 0.6, 0.02] });
     }
@@ -221,11 +221,11 @@ export class Teen extends EscenaEtapa {
   private armarCine(piso: number): void {
     const g = this.cine;
     malla(g, GEO.caja, '#3a3f4a', { pos: [0, piso - 0.05, -2], esc: [12, 0.1, 10] });
-    malla(g, GEO.caja, '#5a606b', { pos: [0, piso + 0.01, -3.2], esc: [8, 0.02, 2.2] });
+    malla(g, GEO.caja, '#5a606b', { pos: [0, piso + 0.005, -3.2], esc: [8, 0.03, 2.2] });
     // Fachada del cine con la puerta y las marquesinas.
     const fz = -4.3;
-    malla(g, GEO.caja, '#5e3a57', { pos: [0, piso + 2, fz], esc: [7, 4, 0.3] });
-    malla(g, GEO.caja, '#141414', { pos: [0, piso + 1.1, fz + 0.16], esc: [1.3, 2.2, 0.04] });
+    malla(g, GEO.caja, '#5e3a57', { pos: [0, piso + 1.995, fz], esc: [7, 4, 0.3] });
+    malla(g, GEO.caja, '#141414', { pos: [0, piso + 1.11, fz + 0.16], esc: [1.3, 2.2, 0.04] });
     malla(g, GEO.caja, '#2b1d2b', { pos: [0, piso + 2.65, fz + 0.3], esc: [2.6, 0.6, 0.3] });
     const cartel = new TextPanel(t('adolescente.cine'), { ancho: 2.3, tamano: 0.38, fondo: null, color: '#ffd166', negrita: true, padding: 0.02 });
     cartel.position.set(0, piso + 2.65, fz + 0.46);
@@ -247,7 +247,7 @@ export class Teen extends EscenaEtapa {
     g.add(this.focos);
     // Faroles.
     for (const x of [-2.6, 2.6]) {
-      malla(g, GEO.cilindro, '#2b2b33', { pos: [x, piso + 1.2, -2.6], esc: [0.04, 2.4, 0.04] });
+      malla(g, GEO.cilindro, '#2b2b33', { pos: [x, piso + 1.21, -2.6], esc: [0.04, 2.4, 0.04] });
       const luz = new Mesh(GEO.esfera, new MeshBasicMaterial({ color: '#fff3b0' }));
       luz.position.set(x, piso + 2.45, -2.6);
       luz.scale.setScalar(0.12);

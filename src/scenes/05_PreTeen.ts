@@ -26,6 +26,7 @@ import { EscenaEtapa } from './EscenaBase';
 
 /** Altura de las mesas (respecto del pecho). */
 const MESA = -0.12;
+const SOBRE_MESA = MESA + 0.0008;
 const INICIO_RELOJ = 20 * 60 + 30;
 const FIN_RELOJ = 22 * 60;
 
@@ -100,7 +101,7 @@ export class PreTeen extends EscenaEtapa {
     hijo.grupo.position.set(0, cadera - 0.48 * 0.8, z);
     padre.add(hijo.grupo);
     const asiento = cadera - piso;
-    malla(padre, GEO.caja, '#7a5c45', { pos: [0, piso + asiento / 2 - 0.03, z + 0.05], esc: [0.36, asiento - 0.06, 0.34] });
+    malla(padre, GEO.caja, '#7a5c45', { pos: [0, piso + asiento / 2 - 0.03, z - 0.015], esc: [0.36, asiento - 0.06, 0.23] });
     return hijo;
   }
 
@@ -155,7 +156,7 @@ export class PreTeen extends EscenaEtapa {
     mesa(this.juego.assets, g, piso, MESA, 0, -0.62, 1.0, 0.6, '#d9d2c5');
     this.hijoCena = this.sentarHijo(g, piso, -1.05);
     const plato = this.juego.assets.vestir(crearPlato(), 'plato');
-    plato.position.set(0, MESA - new Box3().setFromObject(plato, true).min.y, -0.5);
+    plato.position.set(0, SOBRE_MESA - new Box3().setFromObject(plato, true).min.y, -0.5);
     g.add(plato);
     this.centroPlato.position.set(0, MESA + 0.04, -0.5);
     g.add(this.centroPlato);
@@ -164,7 +165,7 @@ export class PreTeen extends EscenaEtapa {
     const xs = [-0.34, -0.18, 0.18, 0.34];
     orden.forEach((tipo, i) => {
       const a = this.juego.assets.vestir(crearAlimento(tipo), tipo);
-      a.position.set(xs[i], MESA - new Box3().setFromObject(a, true).min.y, -0.375);
+      a.position.set(xs[i], SOBRE_MESA - new Box3().setFromObject(a, true).min.y, -0.375);
       g.add(a);
       this.alimentos.set(tipo, this.juego.inter.addGrabbable(a, { radio: 0.07 }));
       const etiqueta = new TextPanel(t(`preadolescente.alimentos.${tipo}`), { ancho: 0.15, tamano: 0.02, fondo: 'rgba(255,255,255,0.9)', color: '#1d2433', negrita: true, padding: 0.006 });

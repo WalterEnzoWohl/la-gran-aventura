@@ -16,7 +16,6 @@ export function crearBiberon(): Biberon {
   const grupo = new Group();
   grupo.name = 'biberon';
   malla(grupo, GEO.cilindro, '#eef6fb', { pos: [0, -0.01, 0], esc: [0.032, 0.11, 0.032] });
-  malla(grupo, GEO.cilindro, '#fff4d6', { pos: [0, -0.03, 0], esc: [0.029, 0.07, 0.029] });
   malla(grupo, GEO.cilindro, '#f2a541', { pos: [0, 0.052, 0], esc: [0.035, 0.018, 0.035] });
   malla(grupo, GEO.cono, '#e8c39e', { pos: [0, 0.08, 0], esc: [0.02, 0.04, 0.02] });
   const tetina = new Object3D();
@@ -117,9 +116,11 @@ export class ProgresoCircular {
     private radio = 0.06,
     color = '#3aa76d',
   ) {
-    const fondo = new Mesh(new RingGeometry(radio * 0.78, radio, 32), new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.55, depthTest: false }));
+    // Las dos capas se componen en el mismo paso transparente, en orden de dibujo.
+    const capas = { transparent: true, depthTest: false, depthWrite: false };
+    const fondo = new Mesh(new RingGeometry(radio * 0.78, radio, 32), new MeshBasicMaterial({ ...capas, color: '#ffffff', opacity: 0.55 }));
     fondo.renderOrder = 20;
-    this.arco = new Mesh(new RingGeometry(radio * 0.78, radio, 32, 1, 0, 0.001), new MeshBasicMaterial({ color, depthTest: false }));
+    this.arco = new Mesh(new RingGeometry(radio * 0.78, radio, 32, 1, 0, 0.001), new MeshBasicMaterial({ ...capas, color }));
     this.arco.renderOrder = 21;
     this.grupo.add(fondo, this.arco);
     this.grupo.visible = false;
