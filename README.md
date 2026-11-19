@@ -134,12 +134,14 @@ Presupuesto en el Quest 2: 72 fps, menos de 100 draw calls y 100.000 triángulos
 
 | Escena | Draw calls por ojo | Triángulos por ojo |
 | --- | --- | --- |
-| Intro | ~35 | ~11.000 |
-| Personalización | ~67 | ~18.000 |
-| Embarazo y nacimiento | ~44 | ~15.000 |
-| Bebé | ~75 | ~17.000 |
-| Preadolescente | ~61 | ~15.000 |
-| Adolescente | ~62 | ~27.000 |
-| Final | ~33 | ~10.000 |
+| Intro | 37 | 12.200 |
+| Personalización | 79 | 19.600 |
+| Embarazo y nacimiento | 40 | 14.800 |
+| Bebé | 86 | 19.200 |
+| Preadolescente | 83 | 18.100 |
+| Adolescente | 80 | 26.800 |
+| Final | 32 | 10.300 |
 
-(Medido en el emulador; conviene confirmarlo en el visor con `?debug=1`.)
+(Máximos de un recorrido completo en el emulador, mano fantasma incluida; conviene confirmarlos en el visor con `?debug=1`.)
+
+**Peor caso de duración** (nadie toca nada): el final empieza a los 6:55 y la sesión termina a los 7:19; en modo evento, el reinicio llega a los ~7:35.
