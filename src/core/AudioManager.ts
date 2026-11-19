@@ -19,6 +19,8 @@ export class AudioManager {
   private ruido!: AudioBuffer;
   private bucles = new Map<Bucle, () => void>();
   private musicaActual: { nombre: string; el: HTMLAudioElement } | null = null;
+  /** Pistas disponibles según public/audio/musica.json. */
+  private pistas = new Set<string>();
   silencio = false;
 
   /** Debe llamarse dentro de un gesto del usuario (botón "Entrar a VR"). */
@@ -202,16 +204,27 @@ export class AudioManager {
     }
   }
 
+  /** Lee public/audio/musica.json (lista de pistas disponibles, por ejemplo ["bebe", "final"]). */
+  async cargarLista(): Promise<void> {
+    try {
+      const res = await fetch(import.meta.env.BASE_URL + 'audio/musica.json', { cache: 'no-cache' });
+      const lista = res.ok ? await res.json() : [];
+      if (Array.isArray(lista)) this.pistas = new Set(lista.map(String));
+    } catch {
+      // Sin lista: el juego sigue sin música.
+    }
+  }
+
   /**
-   * Música de fondo desde public/audio/<nombre>.mp3. Si el archivo no existe,
-   * no suena nada y el juego sigue igual. null = silencio.
+   * Música de fondo desde public/audio/<nombre>.mp3, si figura en musica.json.
+   * Si no, no suena nada y el juego sigue igual. null = silencio.
    */
   musica(nombre: string | null): void {
     if (this.musicaActual?.nombre === nombre) return;
     const vieja = this.musicaActual;
     this.musicaActual = null;
     if (vieja) fundirYParar(vieja.el);
-    if (!nombre) return;
+    if (!nombre || !this.pistas.has(nombre)) return;
     const el = new Audio(`${import.meta.env.BASE_URL}audio/${nombre}.mp3`);
     el.loop = true;
     el.volume = 0;

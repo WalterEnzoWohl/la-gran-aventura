@@ -2,13 +2,16 @@
  * Mano fantasma: una mano translúcida que muestra el gesto que hay que hacer
  * (tocar, agarrar y llevar, frotar o palmear) sobre el objeto del paso actual.
  */
-import { Camera, CylinderGeometry, Group, Mesh, MeshBasicMaterial, Object3D, Quaternion, Scene, SphereGeometry, Vector3 } from 'three';
+import { Camera, CylinderGeometry, Group, Mesh, MeshBasicMaterial, Object3D, Quaternion, Scene, SphereGeometry, TorusGeometry, Vector3 } from 'three';
 import type { Pista } from './HintSystem';
 import { ease } from './Tweens';
 
 const MAT = new MeshBasicMaterial({ color: 0xbfe6ff, transparent: true, opacity: 0.55, depthWrite: false });
 const CIL = new CylinderGeometry(1, 1, 1, 10);
 const ESF = new SphereGeometry(1, 12, 8);
+/** Anillos que laten sobre el objetivo y el destino: se ven aunque la mano tape el objeto. */
+const MAT_ANILLO = new MeshBasicMaterial({ color: 0xffd166, transparent: true, opacity: 0.8, depthTest: false, depthWrite: false });
+const ARO = new TorusGeometry(1, 0.07, 8, 32);
 const ARRIBA = new Vector3(0, 1, 0);
 const _a = new Vector3();
 const _b = new Vector3();
@@ -75,6 +78,8 @@ function crearPoses(): { apuntar: Group; pinza: Group; abierta: Group } {
 export class GhostHand {
   grupo = new Group();
   private poses = crearPoses();
+  private anilloObjetivo = new Mesh(ARO, MAT_ANILLO);
+  private anilloDestino = new Mesh(ARO, MAT_ANILLO);
   private pista: Pista | null = null;
   private t = 0;
   private opacidad = 0;
@@ -87,6 +92,11 @@ export class GhostHand {
     this.grupo.visible = false;
     this.grupo.renderOrder = 50;
     scene.add(this.grupo);
+    for (const a of [this.anilloObjetivo, this.anilloDestino]) {
+      a.renderOrder = 60;
+      a.visible = false;
+      scene.add(a);
+    }
   }
 
   mostrar(p: Pista): void {
@@ -105,18 +115,33 @@ export class GhostHand {
     this.poses.abierta.visible = nombre === 'abierta';
   }
 
+  private ubicarAnillo(anillo: Mesh, pos: Vector3, cabeza: Vector3, fase: number): void {
+    anillo.visible = true;
+    anillo.position.copy(pos);
+    anillo.lookAt(cabeza);
+    anillo.scale.setScalar(0.045 + 0.012 * Math.sin(this.t * 6 + fase * Math.PI));
+  }
+
   update(dt: number): void {
     const objetivo = this.opacidad + ((this.pista ? 0.55 : 0) - this.opacidad) * Math.min(1, dt * 6);
     this.opacidad = objetivo;
-    MAT.opacity = objetivo;
+    // La mano "respira" suavemente para llamar la atención sin molestar.
+    MAT.opacity = objetivo * (0.8 + 0.2 * Math.sin(this.t * 5));
+    MAT_ANILLO.opacity = objetivo * 1.4;
     if (!this.pista) {
-      if (this.opacidad < 0.02) this.grupo.visible = false;
+      if (this.opacidad < 0.02) {
+        this.grupo.visible = false;
+        this.anilloObjetivo.visible = this.anilloDestino.visible = false;
+      }
       return;
     }
     this.t += dt;
     const p = this.pista;
     const cabeza = this.camara.getWorldPosition(_a);
     const destino = p.objetivo.getWorldPosition(_b);
+    this.ubicarAnillo(this.anilloObjetivo, destino, cabeza, 0);
+    if (p.destino) this.ubicarAnillo(this.anilloDestino, p.destino.getWorldPosition(new Vector3()), cabeza, 0.5);
+    else this.anilloDestino.visible = false;
     // Dirección desde el objeto hacia el jugador (por ahí viene la mano).
     const haciaJugador = cabeza.clone().sub(destino).normalize();
     const g = this.grupo;

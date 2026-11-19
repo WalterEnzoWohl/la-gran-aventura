@@ -5,6 +5,7 @@
 import { CONFIG } from './content/config';
 import { t } from './content/textos';
 import { Juego } from './core/Juego';
+import { registrarServiceWorker } from './pwa';
 import { definirEscenas } from './scenes';
 
 async function cargarEmuladorSiHaceFalta(): Promise<unknown> {
@@ -24,6 +25,7 @@ async function cargarEmuladorSiHaceFalta(): Promise<unknown> {
 }
 
 async function iniciar(): Promise<void> {
+  registrarServiceWorker();
   document.title = t('general.titulo');
   const titulo = document.getElementById('titulo')!;
   const boton = document.getElementById('entrar') as HTMLButtonElement;
@@ -34,6 +36,8 @@ async function iniciar(): Promise<void> {
   const emulador = await cargarEmuladorSiHaceFalta();
 
   const juego = new Juego(document.getElementById('app')!, definirEscenas);
+  // Modelos .glb y música opcionales (si no hay, se usan primitivas y silencio).
+  await Promise.all([juego.assets.precargar(), juego.audio.cargarLista()]);
   juego.iniciarVistaPrevia();
   // En modo debug, acceso desde la consola (y para las pruebas automáticas con el emulador).
   if (CONFIG.debug) Object.assign(window, { __lga: { juego, emulador } });

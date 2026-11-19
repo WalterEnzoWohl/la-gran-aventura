@@ -1,46 +1,80 @@
 /**
- * Carga de modelos con reemplazo transparente:
- * intenta `public/models/<nombre>.glb`; si no existe, usa la versión con primitivas.
+ * Carga de modelos con reemplazo transparente.
+ *
+ * `public/models/modelos.json` lista los modelos disponibles (por ejemplo ["biberon"]).
+ * Al arrancar se precargan `public/models/<nombre>.glb`; cada objeto del juego pide
+ * su modelo por nombre y, si no está en la lista, se usa la versión con primitivas.
  * Así el arte final se agrega más adelante sin tocar código.
+ *
+ * Convención de los .glb: en metros, +y hacia arriba, el frente hacia +z y el origen
+ * en el centro del objeto (ahí se mide el radio de agarre).
  */
-import { Object3D } from 'three';
+import { Mesh, Object3D } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+/** Nombres de los objetos que se pueden reemplazar por un .glb. */
+export const MODELOS_REEMPLAZABLES = [
+  'sonajero', 'biberon', 'panalSucio', 'panalNuevo', 'tablet', 'cargador', 'plato',
+  'verdura', 'proteina', 'papas', 'golosina', 'maquina', 'pomo', 'llaves',
+] as const;
 
 export class AssetLoader {
   private loader = new GLTFLoader();
-  /** null = se probó y no hay archivo. */
-  private cache = new Map<string, Promise<Object3D | null>>();
+  private modelos = new Map<string, Object3D>();
+  private listo: Promise<void> | null = null;
 
   constructor(private base = import.meta.env.BASE_URL + 'models/') {}
 
-  /**
-   * Devuelve el modelo `nombre` o, si no hay .glb, lo que construya `primitivas()`.
-   * Cada llamada devuelve una copia independiente.
-   */
-  async cargar(nombre: string, primitivas: () => Object3D): Promise<Object3D> {
-    let p = this.cache.get(nombre);
-    if (!p) {
-      p = this.intentar(nombre);
-      this.cache.set(nombre, p);
+  /** Lee la lista y precarga los modelos. Si algo falla, se sigue con primitivas. */
+  precargar(): Promise<void> {
+    if (!this.listo) this.listo = this.cargarTodo();
+    return this.listo;
+  }
+
+  private async cargarTodo(): Promise<void> {
+    let nombres: string[] = [];
+    try {
+      const res = await fetch(this.base + 'modelos.json', { cache: 'no-cache' });
+      if (res.ok) nombres = await res.json();
+    } catch {
+      return;
     }
-    const modelo = await p;
-    if (!modelo) return primitivas();
-    const copia = modelo.clone(true);
+    if (!Array.isArray(nombres)) return;
+    await Promise.all(
+      nombres.map(async (nombre) => {
+        try {
+          const gltf = await this.loader.loadAsync(this.base + nombre + '.glb');
+          this.modelos.set(nombre, gltf.scene);
+        } catch (e) {
+          console.warn(`[modelos] No se pudo cargar ${nombre}.glb; se usan primitivas.`, e);
+        }
+      }),
+    );
+  }
+
+  tiene(nombre: string): boolean {
+    return this.modelos.has(nombre);
+  }
+
+  /** Copia del modelo `nombre`, o lo que construya `primitivas()` si no hay .glb. */
+  modelo(nombre: string, primitivas: () => Object3D): Object3D {
+    const m = this.modelos.get(nombre);
+    if (!m) return primitivas();
+    const copia = m.clone(true);
     copia.name = nombre;
     return copia;
   }
 
-  private async intentar(nombre: string): Promise<Object3D | null> {
-    const url = this.base + nombre + '.glb';
-    try {
-      // Vite responde index.html (200) para archivos que no existen: se verifica el tipo.
-      const head = await fetch(url, { method: 'HEAD' });
-      const tipo = head.headers.get('content-type') ?? '';
-      if (!head.ok || tipo.includes('text/html')) return null;
-      const gltf = await this.loader.loadAsync(url);
-      return gltf.scene;
-    } catch {
-      return null;
-    }
+  /**
+   * "Viste" un objeto armado con primitivas con su .glb, si existe: saca las mallas
+   * directas del grupo y agrega el modelo. Los puntos de referencia (tetina, cabezal…)
+   * siguen funcionando porque no son mallas.
+   */
+  vestir<T extends Object3D>(grupo: T, nombre: string): T {
+    const m = this.modelos.get(nombre);
+    if (!m) return grupo;
+    for (const hijo of [...grupo.children]) if ((hijo as Mesh).isMesh) grupo.remove(hijo);
+    grupo.add(m.clone(true));
+    return grupo;
   }
 }

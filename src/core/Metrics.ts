@@ -44,6 +44,16 @@ export function leerEventos(almacen: Almacen | null = almacenPorDefecto()): Even
   }
 }
 
+/** Borra todas las métricas guardadas en este dispositivo. */
+export function borrarEventos(almacen: Almacen | null = almacenPorDefecto()): void {
+  if (!almacen) return;
+  try {
+    almacen.setItem(CLAVE, '[]');
+  } catch {
+    // Nada que hacer.
+  }
+}
+
 function guardar(lista: Evento[], almacen: Almacen | null): void {
   if (!almacen) return;
   try {

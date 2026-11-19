@@ -96,6 +96,7 @@ export class Baby extends EscenaEtapa {
     this.bebe.grupo.add(this.puntoBiberon);
 
     this.biberon = crearBiberon();
+    this.juego.assets.vestir(this.biberon.grupo, 'biberon');
     this.biberon.grupo.position.set(0.42, -0.1 + 0.07, -0.38);
     this.cuarto.add(this.biberon.grupo);
     this.agarreBiberon = this.juego.inter.addGrabbable(this.biberon.grupo, {
@@ -118,6 +119,7 @@ export class Baby extends EscenaEtapa {
     tacho(c, piso, -0.18, 0.42, -0.4);
 
     this.panalSucio = crearPanalSucio();
+    this.juego.assets.vestir(this.panalSucio.grupo, 'panalSucio');
     this.panalSucio.grupo.position.set(0.1, SUPERFICIE + 0.04, -0.41);
     c.add(this.panalSucio.grupo);
     this.agarreSucio = this.juego.inter.addGrabbable(this.panalSucio.grupo, { radio: 0.08 });
@@ -134,7 +136,7 @@ export class Baby extends EscenaEtapa {
       },
     });
 
-    this.panalNuevo = crearPanalNuevo();
+    this.panalNuevo = this.juego.assets.vestir(crearPanalNuevo(), 'panalNuevo');
     this.panalNuevo.position.set(-0.3, SUPERFICIE + 0.05, -0.36);
     c.add(this.panalNuevo);
     this.agarreNuevo = this.juego.inter.addGrabbable(this.panalNuevo, { radio: 0.08 });

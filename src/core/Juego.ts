@@ -62,6 +62,8 @@ export class Juego {
   private cartelControles: TextPanel;
   private debugPanel: TextPanel | null = null;
   private debugAcum = { t: 0, cuadros: 0 };
+  /** Máximo de draw calls y triángulos por ojo de cada escena (modo debug). */
+  rendimiento = new Map<string, { drawCalls: number; triangulos: number }>();
   private cuadrosXR = 0;
   private arrancoXR = false;
 
@@ -120,7 +122,12 @@ export class Juego {
         this.alSaltar = null;
         this.recentrar();
       },
-      alEntrar: (id) => this.metrics.escena(id),
+      alEntrar: (id) => {
+        this.metrics.escena(id);
+        if (CONFIG.debug && this.rendimiento.size) {
+          console.table(Object.fromEntries(this.rendimiento));
+        }
+      },
       alReiniciar: () => {
         this.estado = nuevaPartida();
         this.tiempoSesion = 0;
@@ -264,6 +271,10 @@ export class Juego {
       const etapa = this.etapa ? ` · etapa ${formatoTiempo(this.etapa.tiempo)} / ${formatoTiempo(this.etapa.tope)}` : '';
       // En VR se dibuja cada ojo por separado: el presupuesto (100 draw calls) es por ojo.
       const ojos = this.renderer.xr.isPresenting ? 2 : 1;
+      const llamadas = Math.round(info.calls / ojos);
+      const tris = Math.round(info.triangles / ojos);
+      const previo = this.rendimiento.get(escena) ?? { drawCalls: 0, triangulos: 0 };
+      this.rendimiento.set(escena, { drawCalls: Math.max(previo.drawCalls, llamadas), triangulos: Math.max(previo.triangulos, tris) });
       this.debugPanel.setTexto(
         `FPS ${fps} · draw calls por ojo ${Math.round(info.calls / ojos)} · triángulos ${(info.triangles / ojos / 1000).toFixed(1)}k\n` +
           `escena ${escena} · sesión ${formatoTiempo(this.tiempoSesion)}${etapa}`,

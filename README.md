@@ -1,32 +1,145 @@
 # La Gran Aventura
 
-Experiencia WebXR para Meta Quest 2, solo con las manos. La especificación vigente está en [Claude.md](Claude.md).
+Experiencia de realidad virtual de 8 minutos como máximo para **Meta Quest 2**, de la Subsecretaría de Familia y Natalidad (GCBA). Corre en el navegador del visor (WebXR) y se juega **solo con las manos**: el jugador forma una familia y acompaña a su hijo de bebé, a los 11 y a los 16 años.
 
-> Estado: **hito 5 (recorrido completo)**. Escenas 01 a 07; la prueba de gestos del hito 1 sigue disponible con `?prueba=1`. El README completo para el equipo llega en el hito 6.
+**Para jugar:** abrir **https://lgavr.vercel.app** en el navegador del Quest y tocar "Entrar a VR".
 
-## Jugar
+La especificación vigente está en [Claude.md](Claude.md).
 
-**https://lgavr.vercel.app**: abrir esa dirección en el navegador del Meta Quest 2 y tocar "Entrar a VR".
-Se publica sola en Vercel con cada `git push` a `main`. Agregando `?debug=1` se ven FPS, draw calls y triángulos.
+---
 
-## Desarrollo
+## 1. Configurar cada Quest 2 (una sola vez)
+
+1. **Seguimiento de manos:** *Configuración → Movimiento → Seguimiento de manos* → activado.
+2. En la misma pantalla, activar **"Cambio automático entre manos y controles"**. Si alguien agarra los controles, el juego muestra "Dejá los controles y mostrá tus manos".
+3. **Límite (Guardian):** modo **estacionario** (alcanza con 1,5 × 1,5 m). Se puede jugar sentado o parado.
+4. Abrir el **navegador** del Quest, entrar a `https://lgavr.vercel.app/?evento=1` y guardarlo como **favorito** (o instalarlo como aplicación desde el menú del navegador).
+5. Abrirlo una vez con internet: queda guardado para funcionar **sin conexión** (ver la sección 3).
+
+**Luz del lugar:** el seguimiento de manos falla con poca luz o a contraluz. Buscar una luz pareja y evitar ventanas detrás del jugador.
+
+## 2. En el evento
+
+- Usar la dirección con **`?evento=1`**: al terminar, el juego vuelve solo a la intro a los 15 s, listo para la próxima persona. Cada partida es una sesión de métricas distinta.
+- Al empezar, la persona toca **"Iniciar la aventura"**: ese toque calibra la altura (mirando al frente, cómoda).
+- **Explicación de 20 segundos:** "Tocá con la punta del índice y agarrá juntando pulgar e índice. Si no sabés qué hacer, aparece una mano que te muestra".
+- **Si alguien se traba:** a los 10 s aparece la mano fantasma; a los 30 s el paso se completa solo. Cada etapa se corta a los 2:15 y toda la experiencia a los 8 minutos.
+- Botón **"Saltar"** en la muñeca izquierda (se toca con el índice derecho): completa el paso actual.
+- Para que la fila vea el juego, transmitir el visor a una pantalla (*Compartir → Transmitir* desde el menú del Quest).
+- Usar fundas higiénicas y desinfectar el visor entre personas.
+
+| Tramo | Duración |
+| --- | --- |
+| Inicio (datos, personalización, nacimiento) | ~1 min |
+| Etapa bebé | ~2 min (tope 2:15) |
+| Etapa preadolescente | ~2 min (tope 2:15) |
+| Etapa adolescente | ~2 min (tope 2:15) |
+| Final | ~30 s |
+
+## 3. Sin internet
+
+**Opción A: caché del visor (recomendada).** Con internet, abrir `https://lgavr.vercel.app/?evento=1` una vez en cada visor y esperar a que cargue. El juego queda guardado y funciona después sin conexión. Cada vez que se publica una versión nueva, el visor la descarga sola la próxima vez que tenga internet.
+
+**Opción B: una notebook en la misma red Wi-Fi** (por ejemplo, un router o hotspot sin internet):
+
+```bash
+npm install        # una sola vez, con internet
+npm run build
+npm run preview    # sirve el juego por HTTPS en el puerto 4173
+```
+
+En el Quest, abrir `https://<IP-de-la-notebook>:4173/?evento=1` (la IP aparece en la consola) y aceptar la advertencia del certificado.
+
+## 4. Métricas
+
+Se registran eventos **anónimos** (sin nombres ni datos personales): inicio y fin de sesión, escenas, cada paso (tiempo, pistas usadas y si se completó solo) y cada etapa (tiempo y si llegó al tope). Se guardan en cada visor.
+
+- Abrir **`https://lgavr.vercel.app/admin.html`** en el navegador del visor: muestra sesiones, tasa de finalización, duración, dificultad por paso y por etapa, y permite **descargar un CSV** o borrar los datos.
+- Para centralizarlas, completar `metricsEndpoint` en `src/content/config.ts` con una URL que reciba los eventos por `POST` (JSON). Se envían solos al terminar cada sesión, si hay conexión, o con "Enviar pendientes" en `admin.html`.
+- La pregunta sobre los programas de la Ciudad va en un QR a la salida (no hay encuesta en el visor).
+
+## 5. Reemplazar arte, música y textos (sin tocar código)
+
+Después de cada cambio: `npm run build` y publicar (o `git push`, que publica solo en Vercel).
+
+### Modelos 3D
+
+1. Copiar el modelo a `public/models/<nombre>.glb`.
+2. Agregar el nombre a `public/models/modelos.json`, por ejemplo `["biberon", "llaves"]`.
+
+Nombres disponibles: `sonajero`, `biberon`, `panalSucio`, `panalNuevo`, `tablet`, `cargador`, `plato`, `verdura`, `proteina`, `papas`, `golosina`, `maquina`, `pomo`, `llaves`.
+
+Convención: en **metros**, +Y hacia arriba, frente hacia +Z y **origen en el centro del objeto** (ahí se mide el radio de agarre). Se recomiendan modelos low-poly CC0 (Kenney, Quaternius) en glTF binario, con texturas de 1024 px como máximo. Si un modelo falta o no carga, se usa la versión con primitivas.
+
+Los personajes y los muebles (que cambian de tamaño según la altura del jugador) se arman con primitivas en `src/game/characters/` y `src/game/escenarios.ts`. Sus colores de pelo, piel y ojos son materiales llamados `pelo`, `piel` y `ojos`.
+
+### Música
+
+1. Copiar la pista a `public/audio/<nombre>.mp3`.
+2. Agregar el nombre a `public/audio/musica.json`.
+
+Pistas que usa el juego: `intro`, `personalizacion`, `embarazo`, `bebe`, `preadolescente`, `adolescente`, `final`. Sin archivos, el juego sigue sin música. Los efectos (clic, campanita, risa, llanto) son sintetizados; las frases del hijo se muestran como globo de diálogo.
+
+### Textos
+
+**Todos** los textos visibles están en `src/content/textos.es.json`: datos de la intro, objetivos, frases del hijo, consejos, reflexión final y **programas de la Ciudad** (`final.programas`, hoy con contenido provisorio).
+
+### Configuración
+
+En `src/content/config.ts`:
+
+| Opción | Qué hace |
+| --- | --- |
+| `PALETAS`, `NOMBRES_ADULTOS`, `NOMBRES_BEBE` | Colores de pelo, piel y ojos, y nombres que se sortean |
+| `nombreBebe` | `'sorteado'` (predeterminado) o `'elegible'` (3 sugerencias para tocar) |
+| `citaVisible` | `true`: se ve a la chica en la puerta del cine; `false`: el hijo entra solo |
+| `tiempos` | Pista (10 s), autocompletar (30 s), tope de etapa (135 s), inicio (60 s), sesión máxima (480 s), reinicio en evento (15 s) |
+| `manos` | Umbrales de la pinza, radios de agarre y de zonas, recorrido de los botones, velocidad de frotado |
+| `metricsEndpoint` | URL para enviar las métricas |
+
+`hijoSexo: 'aleatorio'` y `quienGesta: 'elegible'` todavía no tienen contenido propio (misiones para una hija, elegir quién gesta): por ahora se usa siempre la opción predeterminada.
+
+## 6. Desarrollo
 
 ```bash
 npm install
-npm run dev        # HTTPS en la red local, puerto 5173
+npm run dev        # HTTPS en la red local (puerto 5173)
 npm test           # tests de la lógica pura (Vitest)
 npm run build      # typecheck + build de producción en dist/
 ```
 
-- **En la PC:** abrir `https://localhost:5173/?debug=1`. Como el navegador no tiene visor, se carga el emulador IWER (solo en desarrollo) con manos emuladas; "Entrar a VR" abre la sesión emulada.
-- **En el Quest 2, sin publicar:** con la PC y el visor en la misma red Wi-Fi, abrir en el navegador del Quest `https://<IP-de-la-PC>:5173/?debug=1`, aceptar la advertencia del certificado y tocar "Entrar a VR".
+- **En la PC:** `https://localhost:5173/?debug=1`. Si el navegador no tiene visor, se carga el emulador **IWER** con manos emuladas (solo en desarrollo).
+- **En el Quest sin publicar:** misma red Wi-Fi, `https://<IP-de-la-PC>:5173/?debug=1`.
+- **`?debug=1`:** FPS, draw calls y triángulos **por ojo**, cronómetros de sesión y de etapa. Teclas **0–6** para saltar de escena (0 intro, 1 personalización, 2 embarazo, 3 bebé, 4 preadolescente, 5 adolescente, 6 final), **S** para "Saltar". En la consola del navegador, una tabla con el máximo por escena.
+- **`?prueba=1`:** agrega al principio la escena de prueba de gestos (botón, agarrar, frotar y palmear), útil para ajustar los umbrales de las manos.
 
-`?debug=1` muestra FPS, draw calls y triángulos por ojo, y los cronómetros de sesión y etapa. Las teclas 0–4 saltan a una escena (0 intro, 1 personalización, 2 embarazo, 3 bebé, 4 preadolescente) y la S equivale a "Saltar".
+### Estructura
 
-## Estructura
+```
+src/
+  main.ts, admin.ts, pwa.ts
+  core/      manos (HandTracker), gestos (Gestures), interacción (Interactable), escenas
+             (SceneManager), fundidos, mano fantasma, HintSystem, StageTimer, textos 3D,
+             audio, métricas, carga de modelos
+  game/      estado, herencia, personajes, escenarios, objetos, álbum
+  scenes/    00_PruebaGestos, 01_Intro … 07_Ending
+  content/   config.ts y textos.es.json
+public/      manifest, íconos, models/, audio/
+sw-plantilla.js   service worker (lo completa el build)
+```
 
-- `src/core/`: manos, gestos, interacción, escenas, fundidos, textos, audio, métricas y carga de modelos.
-- `src/game/`: estado de la partida y herencia.
-- `src/content/`: `config.ts` (paletas, decisiones abiertas, tiempos, umbrales de las manos) y `textos.es.json` (todos los textos visibles).
-- `src/scenes/`: escenas. `00_PruebaGestos.ts` es la prueba del hito 1.
-- `public/models/<nombre>.glb` y `public/audio/<nombre>.mp3`: si existen, reemplazan a las primitivas y al silencio.
+### Rendimiento
+
+Presupuesto en el Quest 2: 72 fps, menos de 100 draw calls y 100.000 triángulos por escena, sin sombras en tiempo real. Máximos medidos por ojo (con `?debug=1`):
+
+| Escena | Draw calls por ojo | Triángulos por ojo |
+| --- | --- | --- |
+| Intro | ~35 | ~11.000 |
+| Personalización | ~67 | ~18.000 |
+| Embarazo y nacimiento | ~44 | ~15.000 |
+| Bebé | ~75 | ~17.000 |
+| Preadolescente | ~61 | ~15.000 |
+| Adolescente | ~62 | ~27.000 |
+| Final | ~33 | ~10.000 |
+
+(Medido en el emulador; conviene confirmarlo en el visor con `?debug=1`.)

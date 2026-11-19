@@ -120,6 +120,7 @@ export class Teen extends EscenaEtapa {
     // Mesada con la máquina y el pomo, a la derecha.
     mesa(g, piso, -0.12, 0.33, -0.36, 0.34, 0.3, '#f4f4f4');
     this.maquina = crearMaquina();
+    this.juego.assets.vestir(this.maquina.grupo, 'maquina');
     this.maquina.grupo.position.set(0.27, -0.12 + 0.07, -0.38);
     g.add(this.maquina.grupo);
     this.agarreMaquina = this.juego.inter.addGrabbable(this.maquina.grupo, {
@@ -133,7 +134,7 @@ export class Teen extends EscenaEtapa {
         return false;
       },
     });
-    this.pomo = crearPomo();
+    this.pomo = this.juego.assets.vestir(crearPomo(), 'pomo');
     this.pomo.position.set(0.4, -0.12 + 0.05, -0.3);
     g.add(this.pomo);
 
@@ -209,7 +210,7 @@ export class Teen extends EscenaEtapa {
     malla(g, GEO.cilindro, '#5c3b22', { pos: [-0.3, (piso + 0.25) / 2, -0.55], esc: [0.02, 0.25 - piso, 0.02] });
     malla(g, GEO.cilindro, '#5c3b22', { pos: [-0.3, 0.13, -0.47], esc: [0.01, 0.12, 0.01], rot: [Math.PI / 2, 0, 0] });
     malla(g, GEO.esfera, '#c1121f', { pos: [-0.38, 0.05, -0.58], esc: [0.12, 0.2, 0.06] });
-    this.llaves = crearLlaves();
+    this.llaves = this.juego.assets.vestir(crearLlaves(), 'llaves');
     this.llaves.position.set(-0.3, 0.07, -0.42);
     g.add(this.llaves);
     this.hijoEntrada = this.hijo('parado');

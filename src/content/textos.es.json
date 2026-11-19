@@ -167,5 +167,33 @@
     "dieciseisAnios": "16 años",
     "familia": "Nuestra familia",
     "nacimientoFoto": "¡Llegó!"
+  },
+  "admin": {
+    "titulo": "La Gran Aventura · Métricas",
+    "intro": "Datos anónimos guardados en este dispositivo (sin nombres ni datos personales). Abrí esta página en cada visor para ver sus sesiones.",
+    "sesiones": "Sesiones",
+    "completas": "Llegaron al final",
+    "finalizacion": "Tasa de finalización",
+    "duracionPromedio": "Duración promedio",
+    "duracionMaxima": "Duración máxima",
+    "pendientes": "Eventos sin enviar",
+    "misiones": "Dificultad por misión",
+    "etapas": "Etapas",
+    "colEscena": "Escena",
+    "colMision": "Paso",
+    "colVeces": "Veces",
+    "colTiempo": "Tiempo promedio (s)",
+    "colPistas": "Pistas promedio",
+    "colAuto": "Se completó sola",
+    "colEtapa": "Etapa",
+    "colTope": "Llegó al tope",
+    "descargar": "Descargar CSV",
+    "enviar": "Enviar pendientes",
+    "borrar": "Borrar datos",
+    "confirmarBorrar": "¿Borrar todas las métricas de este dispositivo? No se puede deshacer.",
+    "sinDatos": "Todavía no hay sesiones registradas en este dispositivo.",
+    "enviado": "Listo: se enviaron los eventos pendientes.",
+    "sinEndpoint": "No hay servidor configurado: completá metricsEndpoint en src/content/config.ts.",
+    "volver": "Volver al juego"
   }
 }

@@ -153,7 +153,7 @@ export class PreTeen extends EscenaEtapa {
     const g = this.cocina;
     mesa(g, piso, MESA, 0, -0.62, 1.0, 0.6, '#d9d2c5');
     this.hijoCena = this.sentarHijo(g, piso, -1.05);
-    const plato = crearPlato();
+    const plato = this.juego.assets.vestir(crearPlato(), 'plato');
     plato.position.set(0, MESA + 0.012, -0.5);
     g.add(plato);
     this.centroPlato.position.set(0, MESA + 0.04, -0.5);
@@ -162,7 +162,7 @@ export class PreTeen extends EscenaEtapa {
     const orden: Alimento[] = ['verdura', 'papas', 'proteina', 'golosina'];
     const xs = [-0.34, -0.18, 0.18, 0.34];
     orden.forEach((tipo, i) => {
-      const a = crearAlimento(tipo);
+      const a = this.juego.assets.vestir(crearAlimento(tipo), tipo);
       a.position.set(xs[i], MESA + 0.04, -0.34);
       g.add(a);
       this.alimentos.set(tipo, this.juego.inter.addGrabbable(a, { radio: 0.07 }));
@@ -227,6 +227,7 @@ export class PreTeen extends EscenaEtapa {
 
     // Tablet en las manos del hijo.
     this.tablet = crearTablet();
+    this.juego.assets.vestir(this.tablet.grupo, 'tablet');
     this.tablet.grupo.position.set(-0.1, colchon + 0.26, -0.5);
     this.tablet.grupo.rotation.x = 0.9;
     g.add(this.tablet.grupo);
@@ -234,7 +235,7 @@ export class PreTeen extends EscenaEtapa {
 
     // Mesa de luz con el cargador y el velador, a la derecha.
     mesa(g, piso, -0.1, 0.42, -0.4, 0.3, 0.3, '#a07650');
-    const cargador = crearCargador();
+    const cargador = this.juego.assets.vestir(crearCargador(), 'cargador');
     cargador.position.set(0.42, -0.1 + 0.008, -0.4);
     g.add(cargador);
     const sobreCargador = new Object3D();

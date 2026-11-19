@@ -63,7 +63,7 @@ export class PruebaGestos extends EscenaBase {
     this.raiz.add(this.boton.grupo);
 
     // 2) Sonajero + canasta
-    this.sonajero = await this.juego.assets.cargar('sonajero', crearSonajero);
+    this.sonajero = this.juego.assets.modelo('sonajero', crearSonajero);
     this.sonajero.position.set(-0.15, -0.01, -0.42);
     this.raiz.add(this.sonajero);
     this.agarrable = this.juego.inter.addGrabbable(this.sonajero, {
