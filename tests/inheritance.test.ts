@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { PALETAS } from '../src/content/config';
+import { NOMBRES_ADULTOS, PALETAS } from '../src/content/config';
 import { fill, t } from '../src/content/textos';
-import { nuevaPartida, type Personaje } from '../src/game/GameState';
+import { cambiarGenero, nuevaPartida, type Personaje } from '../src/game/GameState';
 import { heredar, heredarRasgo, mezclarColor, rngConSemilla } from '../src/game/inheritance';
 
-const jugador: Personaje = { nombre: 'Lucía', pelo: 0, piel: 0, ojos: 1 };
-const pareja: Personaje = { nombre: 'Martín', pelo: 3, piel: 4, ojos: 3 };
+const jugador: Personaje = { nombre: 'Lucía', genero: 'mujer', pelo: 0, piel: 0, ojos: 1 };
+const pareja: Personaje = { nombre: 'Martín', genero: 'hombre', pelo: 3, piel: 4, ojos: 3 };
 
 describe('herencia', () => {
   it('con la misma semilla da el mismo hijo', () => {
@@ -52,6 +52,27 @@ describe('herencia', () => {
 });
 
 describe('partida nueva', () => {
+  it('la pareja es siempre del otro género y los nombres son del género de cada uno', () => {
+    const rng = rngConSemilla(9);
+    for (let i = 0; i < 50; i++) {
+      const p = nuevaPartida(rng);
+      expect(p.pareja.genero).not.toBe(p.jugador.genero);
+      expect(NOMBRES_ADULTOS[p.jugador.genero]).toContain(p.jugador.nombre);
+      expect(NOMBRES_ADULTOS[p.pareja.genero]).toContain(p.pareja.nombre);
+    }
+  });
+
+  it('al cambiar el género del jugador, la pareja pasa al otro y los nombres acompañan', () => {
+    const p = nuevaPartida(rngConSemilla(2));
+    const otro = p.jugador.genero === 'hombre' ? 'mujer' : 'hombre';
+    cambiarGenero(p, otro, rngConSemilla(4));
+    expect(p.jugador.genero).toBe(otro);
+    expect(p.pareja.genero).not.toBe(otro);
+    expect(NOMBRES_ADULTOS[p.jugador.genero]).toContain(p.jugador.nombre);
+    expect(NOMBRES_ADULTOS[p.pareja.genero]).toContain(p.pareja.nombre);
+    expect(p.jugador.nombre).not.toBe(p.pareja.nombre);
+  });
+
   it('sortea nombres distintos y rasgos válidos', () => {
     const rng = rngConSemilla(5);
     for (let i = 0; i < 50; i++) {

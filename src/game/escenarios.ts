@@ -109,7 +109,11 @@ export function tacho(padre: Object3D, piso: number, boca: number, x: number, z:
   return g;
 }
 
-export function cama(padre: Object3D, piso: number, colchon: number, x: number, z: number, colorManta = '#7fb3e0'): { grupo: Group; manta: Mesh; almohada: Mesh } {
+/** Cama a lo largo de z (cabecera hacia -z). La manta va de `mantaDesde` a `mantaHasta` (z local). */
+export function cama(
+  padre: Object3D, piso: number, colchon: number, x: number, z: number, colorManta = '#7fb3e0',
+  mantaDesde = -0.4, mantaHasta = 0.9,
+): { grupo: Group; manta: Mesh; almohada: Mesh } {
   const g = new Group();
   padre.add(g);
   const h = colchon - piso;
@@ -117,7 +121,8 @@ export function cama(padre: Object3D, piso: number, colchon: number, x: number, 
   malla(g, GEO.caja, '#fafafa', { pos: [x, colchon - 0.06, z], esc: [0.95, 0.12, 1.85] });
   malla(g, GEO.caja, '#a07650', { pos: [x, colchon + 0.2, z - 0.97], esc: [1.0, 0.9, 0.06] });
   const almohada = malla(g, GEO.caja, '#ffffff', { pos: [x, colchon + 0.04, z - 0.75], esc: [0.6, 0.1, 0.3] });
-  const manta = malla(g, GEO.caja, colorManta, { pos: [x, colchon + 0.07, z + 0.25], esc: [0.97, 0.06, 1.3] });
+  // Edredón grueso: tapa las piernas de quien está acostado.
+  const manta = malla(g, GEO.caja, colorManta, { pos: [x, colchon + 0.09, z + (mantaDesde + mantaHasta) / 2], esc: [0.97, 0.18, mantaHasta - mantaDesde] });
   return { grupo: g, manta, almohada };
 }
 

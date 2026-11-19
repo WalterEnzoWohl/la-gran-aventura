@@ -348,11 +348,11 @@ export class Interactables {
           if (m.perdidaHace > CONFIG.manos.manoPerdida) this.volverACasa(sostenido);
           continue;
         }
-        if (!m.pinch.pinching) {
+        if (!m.toma.tomando) {
           this.soltar(sostenido, m);
           continue;
         }
-        _v.copy(m.pinza).add(sostenido.offset);
+        _v.copy(m.puntoToma).add(sostenido.offset);
         sostenido.obj.getWorldPosition(_w);
         _w.lerp(_v, 1 - Math.exp(-dt * 30));
         setPosicionMundo(sostenido.obj, _w);
@@ -360,20 +360,25 @@ export class Interactables {
       }
       if (!m.visible) continue;
 
+      // Se puede agarrar con la pinza o cerrando la mano (en ese caso cuenta la palma,
+      // con unos centímetros más de margen porque el objeto queda dentro del puño).
+      const conMano = m.toma.modo === 'mano';
+      const punto = m.toma.started ? m.puntoToma : null;
       let mejor: Grabbable | null = null;
       let mejorD = Infinity;
       for (const g of this.grabbables) {
         if (!g.habilitado || g.sostenidoPor || g.volviendo || !visibleEnCadena(g.obj)) continue;
-        const d = g.obj.getWorldPosition(_w).distanceTo(m.pinza);
+        const centro = g.obj.getWorldPosition(_w);
+        const d = punto ? centro.distanceTo(punto) : Math.min(centro.distanceTo(m.pinza), centro.distanceTo(m.palma));
         if (d < mejorD) {
           mejorD = d;
           mejor = g;
         }
       }
       if (!mejor) continue;
-      const radio = mejor.opts.radio ?? CONFIG.manos.radioAgarre;
+      const radio = (mejor.opts.radio ?? CONFIG.manos.radioAgarre) + (conMano ? 0.02 : 0);
       if (mejorD <= radio + 0.05) mejor.cerca = true;
-      if (m.pinch.started && mejorD <= radio) this.agarrar(mejor, m);
+      if (m.toma.started && mejorD <= radio) this.agarrar(mejor, m);
     }
 
     for (const g of this.grabbables) {
@@ -391,8 +396,8 @@ export class Interactables {
     }
     g.sostenidoPor = m;
     g.obj.getWorldPosition(_w);
-    // El objeto se acerca a la pinza, pero sin saltar de golpe.
-    g.offset.copy(_w).sub(m.pinza).multiplyScalar(0.5);
+    // El objeto se acerca a la mano, pero sin saltar de golpe.
+    g.offset.copy(_w).sub(m.puntoToma).multiplyScalar(0.5);
     g.opts.onAgarrar?.(m);
   }
 

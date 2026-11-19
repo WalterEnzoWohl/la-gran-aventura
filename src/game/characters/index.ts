@@ -197,10 +197,15 @@ export function crearBebe(c: Colores, enterito = '#f6e7a8'): Bebe {
   };
 }
 
-/** Colores de ropa fijos por personaje (no son personalizables). */
+/** Ropa y peinado de cada adulto según su género. */
+export function estiloAdulto(genero: 'hombre' | 'mujer'): { ropa: string; pantalon: string; peinado: 'corto' | 'largo' } {
+  return genero === 'mujer'
+    ? { ropa: '#d9667a', pantalon: '#4a3f5c', peinado: 'largo' }
+    : { ropa: '#3f7fbf', pantalon: '#36404f', peinado: 'corto' };
+}
+
+/** Colores de ropa fijos de los hijos (no son personalizables). */
 export const ROPA = {
-  jugador: { ropa: '#3f7fbf', pantalon: '#36404f' },
-  pareja: { ropa: '#d9667a', pantalon: '#4a3f5c' },
   once: { ropa: '#f0a43a', pantalon: '#3c5a8a' },
   dieciseis: { ropa: '#4a9c6d', pantalon: '#2f3442' },
 };

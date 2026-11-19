@@ -22,6 +22,7 @@ import { Interactables } from './Interactable';
 import { Metrics } from './Metrics';
 import { SceneManager, type DefinicionEscena } from './SceneManager';
 import { formatoTiempo, type StageTimer } from './StageTimer';
+import { RestartButton } from './RestartButton';
 import { TextPanel } from './TextPanel';
 import { WristSkip } from './WristSkip';
 
@@ -59,6 +60,7 @@ export class Juego {
   private reloj = new Timer();
   private luces: { luz: HemisphereLight | DirectionalLight; base: number }[] = [];
   private muneca: WristSkip;
+  private botonReiniciar: RestartButton;
   private cartelControles: TextPanel;
   private debugPanel: TextPanel | null = null;
   private debugAcum = { t: 0, cuadros: 0 };
@@ -98,6 +100,7 @@ export class Juego {
     this.fader = new Fader(this.scene, this.camara);
     this.fantasma = new GhostHand(this.scene, this.camara);
     this.muneca = new WristSkip(this.scene, this.manos, () => this.saltar());
+    this.botonReiniciar = new RestartButton(this.estacion, this.manos, () => this.reiniciarPartida());
 
     this.cartelControles = new TextPanel(t('general.dejaControles'), { ancho: 0.9, tamano: 0.06, fondo: '#1d2433', color: '#ffd166', negrita: true });
     this.cartelControles.visible = false;
@@ -213,6 +216,13 @@ export class Juego {
     for (const l of this.luces) l.luz.intensity = l.base * factor;
   }
 
+  /** Vuelve a empezar desde la intro (botón "Reiniciar"). Cierra la sesión de métricas actual. */
+  reiniciarPartida(): void {
+    if (this.escenas.enTransicion) return;
+    this.metrics.terminarSesion();
+    void this.escenas.reiniciar();
+  }
+
   saltar(): void {
     this.alSaltar?.();
   }
@@ -239,6 +249,9 @@ export class Juego {
     this.inter.update(dt);
     this.escenas.update(dt);
     this.muneca.update(dt);
+    // En la intro no hace falta (y así no distrae del primer botón).
+    this.botonReiniciar.visible = !!this.escenas.actual && this.escenas.actual.id !== 'intro';
+    this.botonReiniciar.update(dt);
     this.fantasma.update(dt);
     this.fader.update(dt);
     this.actualizarCartelControles();

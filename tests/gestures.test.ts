@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Vector3 } from 'three';
-import { PathFollower, PinchDetector, PokeDetector, RubCounter } from '../src/core/Gestures';
+import { cierreDeMano, PathFollower, PinchDetector, PokeDetector, RubCounter, TomaDetector } from '../src/core/Gestures';
 
 describe('PinchDetector (histéresis 1,5 cm / 3 cm)', () => {
   it('empieza por debajo de 1,5 cm y no se suelta hasta pasar 3 cm', () => {
@@ -205,5 +205,45 @@ describe('PathFollower (afeitada: a menos de 4 cm del trazo)', () => {
     p.update(trazo[0]);
     p.update(trazo[2]);
     expect(p.siguiente).toBe(3);
+  });
+});
+
+describe('Agarrar con la pinza o con la mano cerrada', () => {
+  const pinza = () => new PinchDetector(0.015, 0.03);
+  const puno = () => new PinchDetector(0.82, 0.97);
+
+  it('agarra con la pinza', () => {
+    const p = pinza(), m = puno(), t = new TomaDetector();
+    p.update(0.01); m.update(1.3); t.update(p, m);
+    expect(t.started).toBe(true);
+    expect(t.modo).toBe('pinza');
+  });
+
+  it('agarra cerrando la mano', () => {
+    const p = pinza(), m = puno(), t = new TomaDetector();
+    p.update(0.05); m.update(0.3); t.update(p, m);
+    expect(t.started).toBe(true);
+    expect(t.modo).toBe('mano');
+  });
+
+  it('suelta solo cuando se abren los dos gestos', () => {
+    const p = pinza(), m = puno(), t = new TomaDetector();
+    p.update(0.01); m.update(0.3); t.update(p, m);
+    p.update(0.05); t.update(p, m);
+    expect(t.tomando).toBe(true);
+    expect(t.modo).toBe('mano');
+    m.update(1.3); t.update(p, m);
+    expect(t.ended).toBe(true);
+    expect(t.modo).toBeNull();
+  });
+
+  it('mide el cierre de la mano sin depender de su tamaño', () => {
+    const palma = new Vector3();
+    const abierta = [new Vector3(0, 0.12, 0), new Vector3(0, 0.115, 0), new Vector3(0, 0.1, 0)];
+    const cerrada = abierta.map((v) => v.clone().multiplyScalar(0.25));
+    expect(cierreDeMano(abierta, palma, 0.09)).toBeGreaterThan(1.1);
+    expect(cierreDeMano(cerrada, palma, 0.09)).toBeLessThan(0.82);
+    // Una mano el doble de grande da el mismo valor.
+    expect(cierreDeMano(abierta.map((v) => v.clone().multiplyScalar(2)), palma, 0.18)).toBeCloseTo(cierreDeMano(abierta, palma, 0.09));
   });
 });

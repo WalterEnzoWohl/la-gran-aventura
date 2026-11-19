@@ -5,13 +5,15 @@
     "sinWebXR": "Este navegador no soporta realidad virtual. Abrí esta página en el navegador del Meta Quest.",
     "dejaControles": "Dejá los controles y mostrá tus manos",
     "saltar": "Saltar",
-    "fuente": "Fuente: UNICEF Argentina con datos de la DEIS – Ministerio de Salud"
+    "fuente": "Fuente: UNICEF Argentina con datos de la DEIS – Ministerio de Salud",
+    "reiniciar": "Reiniciar",
+    "reiniciarConfirmar": "¿Reiniciar? Tocá otra vez"
   },
   "pruebaGestos": {
     "titulo": "Prueba de gestos",
     "pasoTocar": "Tocá el botón con la punta del índice",
     "boton": "Tocame",
-    "pasoAgarrar": "Agarrá el sonajero juntando pulgar e índice y dejalo en la canasta",
+    "pasoAgarrar": "Agarrá el sonajero (pinza o mano cerrada) y dejalo en la canasta",
     "pasoFrotar": "Frotá la esfera celeste con la mano durante 2 segundos",
     "pasoPalmear": "Palmeá 3 veces la esfera naranja",
     "listo": "¡Todo funciona!",
@@ -33,7 +35,10 @@
     "ojos": "Ojos",
     "sortear": "Otro nombre",
     "listo": "¡Listo!",
-    "objetivo": "Elegí cómo son y tocá «¡Listo!»"
+    "objetivo": "Elegí si sos hombre o mujer, cómo son, y tocá «¡Listo!»",
+    "hombre": "Hombre",
+    "mujer": "Mujer",
+    "soy": "Soy"
   },
   "rasgos": {
     "pelo": {
@@ -71,7 +76,7 @@
   },
   "bebe": {
     "curiosidad": "Tu bebé ya conoce tu voz: la escuchó durante meses desde la panza.",
-    "agarraBiberon": "Agarrá el biberón juntando pulgar e índice",
+    "agarraBiberon": "Agarrá el biberón: juntá pulgar e índice o cerrá la mano",
     "daselo": "Dáselo",
     "levantalo": "Agarrá a tu bebé para levantarlo",
     "palmeale": "Palmeale la espalda 3 veces",

@@ -184,3 +184,37 @@ export class PathFollower {
     this.siguiente = this.puntos.length;
   }
 }
+
+/**
+ * Agarre combinado: se agarra con la pinza (pulgar e índice) **o** cerrando la mano.
+ * `modo` dice con qué gesto empezó el agarre; se suelta cuando se abren los dos.
+ */
+export class TomaDetector {
+  tomando = false;
+  started = false;
+  ended = false;
+  modo: 'pinza' | 'mano' | null = null;
+
+  update(pinza: PinchDetector, mano: PinchDetector): void {
+    const antes = this.tomando;
+    this.tomando = pinza.pinching || mano.pinching;
+    this.started = !antes && this.tomando;
+    this.ended = antes && !this.tomando;
+    if (this.started) this.modo = pinza.pinching ? 'pinza' : 'mano';
+    // Si se suelta el gesto con el que se empezó pero sigue el otro, sigue agarrado con ese.
+    else if (this.modo === 'mano' && !mano.pinching && pinza.pinching) this.modo = 'pinza';
+    else if (this.modo === 'pinza' && !pinza.pinching && mano.pinching) this.modo = 'mano';
+    if (!this.tomando) this.modo = null;
+  }
+}
+
+/**
+ * Qué tan cerrada está la mano: distancia promedio de las puntas del medio, el anular
+ * y el meñique a la palma, dividida por el largo de la palma (muñeca → nudillo del medio).
+ * Mano abierta ≈ 1,2 o más; puño ≈ 0,4. No depende del tamaño de la mano.
+ */
+export function cierreDeMano(puntas: Vector3[], palma: Vector3, largoPalma: number): number {
+  if (!puntas.length || largoPalma <= 0) return 99;
+  const promedio = puntas.reduce((s, p) => s + p.distanceTo(palma), 0) / puntas.length;
+  return promedio / largoPalma;
+}

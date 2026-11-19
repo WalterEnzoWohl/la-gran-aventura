@@ -203,60 +203,59 @@ export class PreTeen extends EscenaEtapa {
   }
 
   // ── 3. Dormir ──
+  // Distribución sin cruces: la cama atrás (borde cercano a 47 cm); la mesa de luz y el
+  // interruptor adelante, a los costados, al alcance de la mano.
   private armarDormitorio(piso: number): void {
     const g = this.dormitorio;
     const colchon = -0.3;
-    // Cama de costado: la cabecera a la izquierda y el hijo cerca del borde, al alcance.
+    // Cama de costado: la cabecera a la izquierda. La manta tapa solo las piernas.
     const camaGrupo = new Group();
-    camaGrupo.position.set(0, 0, -0.85);
+    camaGrupo.position.set(0, 0, -0.95);
     camaGrupo.rotation.y = Math.PI / 2;
     g.add(camaGrupo);
-    cama(camaGrupo, piso, colchon, 0, 0, '#7fb3e0');
+    cama(camaGrupo, piso, colchon, 0, 0, '#5b8fd1', 0.0, 0.9);
     cuadro(g, 0.2, piso + 1.6, PARED_FONDO, '#a7c7e7', 0.5, 0.35);
 
-    // Hijo acostado boca arriba, cabeza a la izquierda.
+    // Hijo acostado boca arriba, cabeza a la izquierda, cerca del borde de la cama.
     const hijo = crearPersona({ edad: 'once', peinado: 'corto', ...ROPA.once, ...coloresHijo(this.juego.estado.hijo!) });
     const acostado = new Group();
-    acostado.position.set(0.7, colchon + 0.08, -0.62);
+    acostado.position.set(0.7, colchon + 0.1, -0.72);
     acostado.rotation.y = Math.PI / 2;
     hijo.grupo.rotation.x = -Math.PI / 2;
     acostado.add(hijo.grupo);
     g.add(acostado);
-    // Manta sobre las piernas.
-    malla(g, GEO.caja, '#5b8fd1', { pos: [0.35, colchon + 0.1, -0.68], esc: [0.75, 0.08, 0.5] });
 
-    // Tablet en las manos del hijo.
+    // Tablet en las manos del hijo, arriba de su pecho.
     this.tablet = crearTablet();
     this.juego.assets.vestir(this.tablet.grupo, 'tablet');
-    this.tablet.grupo.position.set(-0.1, colchon + 0.26, -0.5);
+    this.tablet.grupo.position.set(-0.15, colchon + 0.3, -0.6);
     this.tablet.grupo.rotation.x = 0.9;
     g.add(this.tablet.grupo);
     this.agarreTablet = this.juego.inter.addGrabbable(this.tablet.grupo, { radio: 0.08 });
 
-    // Mesa de luz con el cargador y el velador, a la derecha.
-    mesa(g, piso, -0.1, 0.42, -0.4, 0.3, 0.3, '#a07650');
+    // Mesa de luz con el cargador y el velador, adelante a la derecha.
+    mesa(g, piso, -0.1, 0.45, -0.3, 0.3, 0.28, '#a07650');
     const cargador = this.juego.assets.vestir(crearCargador(), 'cargador');
-    cargador.position.set(0.42, -0.1 + 0.008, -0.4);
+    cargador.position.set(0.42, -0.1 + 0.008, -0.3);
     g.add(cargador);
     const sobreCargador = new Object3D();
-    sobreCargador.position.set(0.42, -0.1 + 0.025, -0.4);
+    sobreCargador.position.set(0.42, -0.1 + 0.025, -0.3);
     g.add(sobreCargador);
     this.zonaCargador = this.juego.inter.addZona(sobreCargador, {
       acepta: (x) => x === this.agarreTablet,
       marcador: cargador,
       onSoltar: () => this.tabletAlCargador(),
     });
-    malla(g, GEO.cilindro, '#e6d3b3', { pos: [0.5, -0.1 + 0.1, -0.5], esc: [0.015, 0.2, 0.015] });
+    malla(g, GEO.cilindro, '#e6d3b3', { pos: [0.55, -0.1 + 0.1, -0.22], esc: [0.015, 0.2, 0.015] });
     this.velador = new Mesh(GEO.esfera, new MeshBasicMaterial({ color: '#ffe9a8' }));
     this.velador.scale.setScalar(0.06);
-    this.velador.position.set(0.5, -0.1 + 0.22, -0.5);
+    this.velador.position.set(0.55, -0.1 + 0.22, -0.22);
     g.add(this.velador);
 
-    // Interruptor de la luz en una columnita a la izquierda (al alcance de la mano).
-    const columna = -0.45;
-    malla(g, GEO.caja, '#f6e3c9', { pos: [-0.42, (piso + 0.05) / 2, columna - 0.06], esc: [0.16, 0.05 - piso, 0.1] });
+    // Interruptor de la luz en una columnita adelante a la izquierda (no toca la cama).
+    malla(g, GEO.caja, '#efe3d0', { pos: [-0.45, (piso + 0.07) / 2, -0.4], esc: [0.14, 0.07 - piso, 0.1] });
     this.interruptor = crearInterruptor();
-    this.interruptor.grupo.position.set(-0.42, 0.0, columna);
+    this.interruptor.grupo.position.set(-0.45, 0.0, -0.335);
     g.add(this.interruptor.grupo);
     this.juego.inter.addPokeable(this.interruptor.grupo, {
       ancho: 0.08,

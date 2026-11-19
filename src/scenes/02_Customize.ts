@@ -1,5 +1,6 @@
 /**
  * 02 Personalización (unos 30 s): "Vos" y "Tu pareja" frente al jugador.
+ * Primero, si sos hombre o mujer (la pareja es siempre del otro género).
  * Nombres sorteados (con un dado para volver a sortear, sin teclado) y 5 muestras
  * de color por rasgo. Arranca con valores al azar: se puede tocar "¡Listo!" enseguida.
  *
@@ -10,23 +11,27 @@ import {
   BoxGeometry, CanvasTexture, Color, Group, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial,
   Object3D, PlaneGeometry, Quaternion, SRGBColorSpace, Vector3,
 } from 'three';
-import { PALETAS, type TraitKey } from '../content/config';
+import { PALETAS, type Genero, type TraitKey } from '../content/config';
 import { t } from '../content/textos';
 import { crearBoton } from '../core/Button';
 import type { Pokeable } from '../core/Interactable';
-import { crearPersona, ROPA, tenir, type Persona } from '../game/characters';
-import { crearHabitacion, planta, PARED_FONDO, cuadro } from '../game/escenarios';
-import { sortearNombre, type Personaje } from '../game/GameState';
+import { crearPersona, estiloAdulto, tenir, type Persona } from '../game/characters';
+import { crearHabitacion, cuadro, PARED_FONDO, planta } from '../game/escenarios';
+import { cambiarGenero, sortearNombre, type Personaje } from '../game/GameState';
 import { GEO, malla } from '../game/primitivas';
 import { coloresPersonaje } from '../game/textoHerencia';
-import { EscenaInicio } from './EscenaBase';
+import { EscenaInicio, liberar } from './EscenaBase';
 
 const MUESTRA = 0.05;
 const SEPARACION = 0.008;
 const RASGOS: TraitKey[] = ['pelo', 'piel', 'ojos'];
 /** Consola: ancho, alto y centro vertical (coordenadas de la consola). */
-const CONSOLA = { ancho: 0.68, alto: 0.5, centroY: -0.03 };
+const CONSOLA = { ancho: 0.68, alto: 0.58, centroY: 0.01 };
 const X_COLUMNA = 0.165;
+/** Fila de los botones Hombre / Mujer (arriba de todo). */
+const Y_GENERO = 0.255;
+
+type Lado = 'jugador' | 'pareja';
 
 interface Muestra {
   poke: Pokeable;
@@ -49,6 +54,8 @@ export class Customize extends EscenaInicio {
   private botonListo!: ReturnType<typeof crearBoton>;
   private fondoConsola!: { canvas: HTMLCanvasElement; textura: CanvasTexture };
   private columnas: { instancias: InstancedMesh; muestras: Muestra[] }[] = [];
+  private personas: Partial<Record<Lado, Persona>> = {};
+  private marcoGenero!: Mesh;
 
   protected construir(): void {
     const piso = this.juego.pisoY;
@@ -56,8 +63,9 @@ export class Customize extends EscenaInicio {
     cuadro(this.raiz, -1.3, piso + 1.6, PARED_FONDO, '#f2b880');
     planta(this.raiz, 1.9, piso, -1.8);
 
-    const { jugador, pareja } = this.juego.estado;
-    this.juego.manos.setPiel(coloresPersonaje(jugador).piel);
+    this.juego.manos.setPiel(coloresPersonaje(this.juego.estado.jugador).piel);
+    // El objetivo arriba de las cabezas de los personajes.
+    this.objetivo.position.y = 0.74;
 
     const consola = new Group();
     consola.position.set(0, -0.03, -0.46);
@@ -65,8 +73,9 @@ export class Customize extends EscenaInicio {
     this.raiz.add(consola);
     this.crearFondoConsola(consola);
 
-    this.armarLado(jugador, -0.55, -X_COLUMNA, ROPA.jugador, 'corto', consola, true);
-    this.armarLado(pareja, 0.55, X_COLUMNA, ROPA.pareja, 'largo', consola, false);
+    this.armarLado('jugador', -X_COLUMNA, consola);
+    this.armarLado('pareja', X_COLUMNA, consola);
+    this.armarGenero(consola);
     this.dibujarConsola();
 
     this.botonListo = crearBoton(this.juego.inter, t('personalizacion.listo'), {
@@ -79,6 +88,60 @@ export class Customize extends EscenaInicio {
     consola.add(this.botonListo.grupo);
 
     this.juego.audio.musica('personalizacion');
+  }
+
+  private personaje(lado: Lado): Personaje {
+    return this.juego.estado[lado];
+  }
+
+  /** (Re)arma el personaje grande con el peinado y la ropa de su género. */
+  private rehacerPersona(lado: Lado): void {
+    const vieja = this.personas[lado];
+    if (vieja) {
+      this.raiz.remove(vieja.grupo);
+      liberar(vieja.grupo);
+    }
+    const p = this.personaje(lado);
+    const x = lado === 'jugador' ? -0.55 : 0.55;
+    const persona = crearPersona({ edad: 'adulto', ...estiloAdulto(p.genero), ...coloresPersonaje(p) });
+    persona.grupo.position.set(x, this.juego.pisoY, -1.5);
+    persona.grupo.rotation.y = -x * 0.35;
+    this.raiz.add(persona.grupo);
+    this.personas[lado] = persona;
+  }
+
+  /** Botones "Hombre" y "Mujer" arriba de la columna del jugador. */
+  private armarGenero(consola: Group): void {
+    const columna = new Group();
+    columna.position.x = -X_COLUMNA;
+    consola.add(columna);
+    this.marcoGenero = malla(columna, GEO.caja, '#ffd166', { esc: [0.124, 0.064, 0.008] });
+    const opciones: [Genero, number][] = [['hombre', -0.065], ['mujer', 0.065]];
+    const ubicarMarco = () => {
+      const x = opciones.find(([g]) => g === this.juego.estado.jugador.genero)![1];
+      this.marcoGenero.position.set(x, Y_GENERO, -0.03);
+    };
+    for (const [genero, x] of opciones) {
+      const b = crearBoton(this.juego.inter, t(`personalizacion.${genero}`), {
+        ancho: 0.11,
+        alto: 0.05,
+        color: genero === 'mujer' ? '#b5487d' : '#3f6fb5',
+        tamanoTexto: 0.022,
+        onPoke: () => {
+          const { estado } = this.juego;
+          if (estado.jugador.genero === genero) return;
+          cambiarGenero(estado, genero);
+          this.rehacerPersona('jugador');
+          this.rehacerPersona('pareja');
+          ubicarMarco();
+          this.dibujarConsola();
+          this.juego.audio.sfx('pop');
+        },
+      });
+      b.grupo.position.set(x, Y_GENERO, 0);
+      columna.add(b.grupo);
+    }
+    ubicarMarco();
   }
 
   private crearFondoConsola(consola: Group): void {
@@ -116,28 +179,22 @@ export class Customize extends EscenaInicio {
       ctx.font = `600 ${0.02 * k}px ${fuente}`;
       RASGOS.forEach((rasgo, fila) => ctx.fillText(t(`personalizacion.${rasgo}`), px(xc - 0.14), py(0.068 - fila * 0.09)));
     }
+    // Arriba a la derecha: el género de la pareja (siempre el otro).
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#dfe6f2';
+    ctx.font = `600 ${0.022 * k}px ${fuente}`;
+    ctx.fillText(t(`personalizacion.${pareja.genero}`), px(X_COLUMNA), py(Y_GENERO));
     textura.needsUpdate = true;
   }
 
-  /** Personaje grande a la distancia y su columna de controles en la consola. */
-  private armarLado(
-    p: Personaje,
-    xPersonaje: number,
-    xColumna: number,
-    ropa: { ropa: string; pantalon: string },
-    peinado: 'corto' | 'largo',
-    consola: Group,
-    esJugador: boolean,
-  ): void {
-    const piso = this.juego.pisoY;
-    const persona: Persona = crearPersona({ edad: 'adulto', peinado, ...ropa, ...coloresPersonaje(p) });
-    persona.grupo.position.set(xPersonaje, piso, -1.5);
-    persona.grupo.rotation.y = -xPersonaje * 0.35;
-    this.raiz.add(persona.grupo);
+  /** Columna de controles de un lado de la consola. */
+  private armarLado(lado: Lado, xColumna: number, consola: Group): void {
+    const esJugador = lado === 'jugador';
+    this.rehacerPersona(lado);
 
     const actualizar = () => {
-      const c = coloresPersonaje(p);
-      tenir(persona.grupo, c);
+      const c = coloresPersonaje(this.personaje(lado));
+      tenir(this.personas[lado]!.grupo, c);
       if (esJugador) this.juego.manos.setPiel(c.piel);
     };
 
@@ -145,15 +202,16 @@ export class Customize extends EscenaInicio {
     columna.position.x = xColumna;
     consola.add(columna);
 
-    // Botón con dado para sortear otro nombre.
+    // Botón con dado para sortear otro nombre (del mismo género).
     const dado = crearBoton(this.juego.inter, t('personalizacion.sortear'), {
       ancho: 0.2,
       alto: 0.055,
       color: '#6a5acd',
       tamanoTexto: 0.024,
       onPoke: () => {
-        const otro = esJugador ? this.juego.estado.pareja.nombre : this.juego.estado.jugador.nombre;
-        p.nombre = sortearNombre([p.nombre, otro]);
+        const p = this.personaje(lado);
+        const otro = this.personaje(esJugador ? 'pareja' : 'jugador').nombre;
+        p.nombre = sortearNombre(p.genero, [p.nombre, otro]);
         this.dibujarConsola();
         this.juego.audio.sfx('pop');
       },
@@ -174,7 +232,7 @@ export class Customize extends EscenaInicio {
     RASGOS.forEach((rasgo, fila) => {
       const y = 0.025 - fila * 0.09;
       const marco = malla(columna, GEO.caja, '#ffd166', { esc: [MUESTRA + 0.014, MUESTRA + 0.014, 0.008] });
-      const ubicarMarco = () => marco.position.set(xMuestra(p[rasgo]), y, -0.03);
+      const ubicarMarco = () => marco.position.set(xMuestra(this.personaje(lado)[rasgo]), y, -0.03);
       PALETAS[rasgo].forEach((op, i) => {
         const g = new Group();
         g.position.set(xMuestra(i), y, 0);
@@ -186,7 +244,7 @@ export class Customize extends EscenaInicio {
           alto: MUESTRA,
           tapa,
           onPoke: () => {
-            p[rasgo] = i;
+            this.personaje(lado)[rasgo] = i;
             ubicarMarco();
             actualizar();
           },

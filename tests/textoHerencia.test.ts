@@ -4,8 +4,8 @@ import type { Personaje } from '../src/game/GameState';
 import type { HijoRasgos } from '../src/game/inheritance';
 import { coloresHijo, textoNacimiento } from '../src/game/textoHerencia';
 
-const lucia: Personaje = { nombre: 'Lucía', pelo: 0, piel: 1, ojos: 2 };
-const martin: Personaje = { nombre: 'Martín', pelo: 3, piel: 3, ojos: 4 };
+const lucia: Personaje = { nombre: 'Lucía', genero: 'mujer', pelo: 0, piel: 1, ojos: 2 };
+const martin: Personaje = { nombre: 'Martín', genero: 'hombre', pelo: 3, piel: 3, ojos: 4 };
 
 function hijo(pelo: HijoRasgos['pelo'], ojos: HijoRasgos['ojos']): HijoRasgos {
   return { pelo, ojos, piel: '#c0a080' };

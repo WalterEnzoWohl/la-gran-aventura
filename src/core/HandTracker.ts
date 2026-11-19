@@ -9,7 +9,7 @@
 import { Color, Group, InstancedMesh, Mesh, MeshStandardMaterial, Object3D, Quaternion, Scene, Vector3, WebGLRenderer } from 'three';
 import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory.js';
 import { CONFIG } from '../content/config';
-import { PinchDetector } from './Gestures';
+import { cierreDeMano, PinchDetector, TomaDetector } from './Gestures';
 
 export type Lado = 'left' | 'right';
 
@@ -28,6 +28,16 @@ export interface ManoEstado {
   velIndice: Vector3;
   velPalma: Vector3;
   pinch: PinchDetector;
+  /** Mano cerrada (agarrar con toda la mano). */
+  puno: PinchDetector;
+  /** Agarre combinado: pinza o mano cerrada. */
+  toma: TomaDetector;
+  /** Punto del agarre: la pinza o, si se agarró con la mano, la palma. */
+  puntoToma: Vector3;
+  /** Cierre de la mano (ver cierreDeMano). */
+  cierre: number;
+  /** Cierre del índice solo (mismo cálculo). */
+  cierreIndice: number;
 }
 
 function nuevaMano(lado: Lado): ManoEstado {
@@ -44,6 +54,11 @@ function nuevaMano(lado: Lado): ManoEstado {
     velIndice: new Vector3(),
     velPalma: new Vector3(),
     pinch: new PinchDetector(CONFIG.manos.pinzaInicio, CONFIG.manos.pinzaSuelta),
+    puno: new PinchDetector(CONFIG.manos.manoCierraInicio, CONFIG.manos.manoCierraSuelta),
+    toma: new TomaDetector(),
+    puntoToma: new Vector3(),
+    cierre: 99,
+    cierreIndice: 99,
   };
 }
 
@@ -103,6 +118,10 @@ export class HandTracker {
       const wrist = joints['wrist'];
       const middle = joints['middle-finger-phalanx-proximal'];
       if (!tip?.visible || !thumb?.visible || !wrist?.visible || !middle) continue;
+      const puntas = ['middle-finger-tip', 'ring-finger-tip', 'pinky-finger-tip']
+        .map((n) => joints[n])
+        .filter((j): j is Object3D => !!j?.visible)
+        .map((j) => j.position);
 
       const m = lado === 'left' ? this.izquierda : this.derecha;
       const reaparece = !m.visible;
@@ -125,6 +144,13 @@ export class HandTracker {
         m.velPalma.lerp(_prevPalma.subVectors(m.palma, _prevPalma).divideScalar(dt), 0.5);
       }
       m.pinch.update(m.indice.distanceTo(m.pulgar));
+      const largoPalma = wrist.position.distanceTo(middle.position);
+      m.cierre = cierreDeMano(puntas, m.palma, largoPalma);
+      m.cierreIndice = cierreDeMano([m.indice], m.palma, largoPalma);
+      // Con el índice estirado no es un puño: es señalar o tocar un botón.
+      m.puno.update(m.cierreIndice > CONFIG.manos.indiceEstirado ? 99 : m.cierre);
+      m.toma.update(m.pinch, m.puno);
+      m.puntoToma.copy(m.toma.modo === 'mano' ? m.palma : m.pinza);
       vistas.add(lado);
     }
 
@@ -133,8 +159,15 @@ export class HandTracker {
         m.visible = true;
         m.perdidaHace = 0;
       } else {
-        if (m.visible) m.pinch.update(null);
-        else m.pinch.started = m.pinch.ended = false;
+        if (m.visible) {
+          m.pinch.update(null);
+          m.puno.update(null);
+          m.toma.update(m.pinch, m.puno);
+        } else {
+          m.pinch.started = m.pinch.ended = false;
+          m.puno.started = m.puno.ended = false;
+          m.toma.started = m.toma.ended = false;
+        }
         m.visible = false;
         m.perdidaHace += dt;
       }

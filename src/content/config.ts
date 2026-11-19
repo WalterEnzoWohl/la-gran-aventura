@@ -37,11 +37,13 @@ export const PALETAS: Record<TraitKey, PaletteOption[]> = {
   ],
 };
 
-/** Nombres que se sortean para el jugador y la pareja. */
-export const NOMBRES_ADULTOS = [
-  'Lucía', 'Martín', 'Sofía', 'Mateo', 'Valentina', 'Juan', 'Camila', 'Tomás',
-  'Julieta', 'Lautaro', 'Agustina', 'Facundo', 'Micaela', 'Nicolás', 'Florencia', 'Santiago',
-];
+export type Genero = 'hombre' | 'mujer';
+
+/** Nombres que se sortean para el jugador y la pareja, según el género. */
+export const NOMBRES_ADULTOS: Record<Genero, string[]> = {
+  mujer: ['Lucía', 'Sofía', 'Valentina', 'Camila', 'Julieta', 'Agustina', 'Micaela', 'Florencia', 'Martina', 'Carolina'],
+  hombre: ['Martín', 'Mateo', 'Juan', 'Tomás', 'Lautaro', 'Facundo', 'Nicolás', 'Santiago', 'Federico', 'Diego'],
+};
 
 /** Nombres que se sortean (o se ofrecen) para el bebé. */
 export const NOMBRES_BEBE = ['Benjamín', 'Thiago', 'Bautista', 'Joaquín', 'Felipe', 'Lorenzo'];
@@ -66,7 +68,11 @@ export interface Tiempos {
 export const CONFIG = {
   // ── Decisiones abiertas ────────────────────────────────────────────────
   hijoSexo: 'varon' as 'varon' | 'aleatorio',
-  quienGesta: 'pareja' as 'pareja' | 'elegible',
+  /**
+   * La pareja es siempre un hombre y una mujer (el jugador elige su género y la pareja
+   * es del otro). Gesta la mujer: si el jugador elige "Mujer", ve su propia panza.
+   */
+  quienGesta: 'mujer' as const,
   /** true: se ve a la chica en la puerta del cine. */
   citaVisible: true,
   /** 'elegible' = 3 sugerencias para tocar (suma unos 10 s). */
@@ -89,6 +95,12 @@ export const CONFIG = {
     pinzaInicio: 0.015,
     /** Pinza: se suelta por encima de esta distancia (m). */
     pinzaSuelta: 0.03,
+    /** Mano cerrada: empieza por debajo de este cierre (1,3 = abierta, 0,3 = puño). */
+    manoCierraInicio: 0.82,
+    /** Mano cerrada: se suelta por encima de este cierre. */
+    manoCierraSuelta: 0.97,
+    /** Si el índice está más estirado que esto, no es mano cerrada (es señalar o tocar). */
+    indiceEstirado: 1.05,
     /** Radio de agarre alrededor del objeto (m). */
     radioAgarre: 0.07,
     /** Radio de las zonas de destino (m). */

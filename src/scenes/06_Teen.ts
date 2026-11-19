@@ -154,8 +154,8 @@ export class Teen extends EscenaEtapa {
       const p = sobreLaCara(x, -0.1);
       this.espumaMenton.push(malla(cab, GEO.esfera, '#ffffff', { pos: [p.x, p.y, p.z - 0.004], esc: [0.022, 0.016, 0.012] }));
     }
-    // Granitos a los costados de la cara, arriba de los trazos (el pelo no los tapa).
-    for (const [x, y] of [[-0.088, 0.035], [0.085, 0.05]]) {
+    // Granitos en los cachetes: quedan a la vista después de la afeitada (el pelo no los tapa).
+    for (const [x, y] of [[-0.06, -0.028], [0.058, -0.048]]) {
       const p = sobreLaCara(x, y, 0.002);
       this.granitos.push(malla(cab, GEO.esfera, '#e05a5a', { pos: [p.x, p.y, p.z], esc: 0.009 }));
     }

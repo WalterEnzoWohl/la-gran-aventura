@@ -121,8 +121,10 @@ export abstract class EscenaBase implements Escena {
 
   /** Pasa a otra estación: fundido, reubicar alrededor del jugador, armar y volver. */
   protected async cambiarEstacion(armar: () => void, color: 'negro' | 'blanco' = 'negro'): Promise<void> {
+    // Si el juego ya está cambiando de escena (Reiniciar, modo evento), el fundido es suyo.
+    if (!this.viva || this.juego.escenas.enTransicion) return;
     await this.juego.fader.salir(color);
-    if (!this.viva) return;
+    if (!this.viva || this.juego.escenas.enTransicion) return;
     this.juego.recentrar();
     this.burbuja.visible = false;
     armar();

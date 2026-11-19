@@ -36,6 +36,9 @@ async function iniciar(): Promise<void> {
   const emulador = await cargarEmuladorSiHaceFalta();
 
   const juego = new Juego(document.getElementById('app')!, definirEscenas);
+  const reiniciar = document.getElementById('reiniciar') as HTMLButtonElement;
+  reiniciar.textContent = t('general.reiniciar');
+  reiniciar.addEventListener('click', () => juego.reiniciarPartida());
   // Modelos .glb y música opcionales (si no hay, se usan primitivas y silencio).
   await Promise.all([juego.assets.precargar(), juego.audio.cargarLista()]);
   juego.iniciarVistaPrevia();
