@@ -144,3 +144,43 @@ export class RubCounter {
     this.desdeUltima = 1;
   }
 }
+
+/**
+ * Trazo guiado (afeitada): se avanza mientras la herramienta esté a menos de
+ * `tolerancia` del próximo punto del trazo. Nunca retrocede.
+ */
+export class PathFollower {
+  /** Índice del próximo punto a alcanzar. */
+  siguiente = 0;
+
+  constructor(
+    public puntos: Vector3[],
+    public tolerancia = 0.04,
+  ) {}
+
+  get completo(): boolean {
+    return this.siguiente >= this.puntos.length;
+  }
+
+  get progreso(): number {
+    return this.puntos.length ? this.siguiente / this.puntos.length : 1;
+  }
+
+  /** Devuelve cuántos puntos avanzó en este cuadro (0 si ninguno). */
+  update(herramienta: Vector3 | null): number {
+    if (!herramienta || this.completo) return 0;
+    const antes = this.siguiente;
+    // Si la mano va rápido, puede saltear hasta dos puntos en un cuadro.
+    for (let i = 0; i < 3 && this.siguiente + i < this.puntos.length; i++) {
+      if (herramienta.distanceTo(this.puntos[this.siguiente + i]) <= this.tolerancia) {
+        this.siguiente += i + 1;
+        break;
+      }
+    }
+    return this.siguiente - antes;
+  }
+
+  terminar(): void {
+    this.siguiente = this.puntos.length;
+  }
+}

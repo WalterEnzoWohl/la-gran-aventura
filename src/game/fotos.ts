@@ -30,3 +30,15 @@ export function fotosAdolescencia(estado: GameState): Foto[] {
     { caras: [caraHijo(estado, 1)], titulo: t('album.quinceAnios'), fondo: '#cfe7f2' },
   ];
 }
+
+/** Álbum completo del final: de la llegada a los 16 años, y la familia. */
+export function fotosFinal(estado: GameState): Foto[] {
+  return [
+    { caras: [caraHijo(estado, 0.7, 'bebe')], titulo: t('album.nacimiento'), fondo: '#f9d5e5' },
+    { caras: [caraHijo(estado, 0.8, 'bebe')], titulo: t('album.unAnio'), fondo: '#bfe0f5' },
+    { caras: [caraAdulto(estado.jugador, 'corto'), caraHijo(estado, 0.75)], titulo: t('album.escuela'), fondo: '#f7d9a8' },
+    { caras: [caraHijo(estado, 0.95)], titulo: t('album.doceAnios'), fondo: '#e3d4f5' },
+    { caras: [caraHijo(estado, 1)], titulo: t('album.dieciseisAnios'), fondo: '#cfe7f2' },
+    { caras: [caraAdulto(estado.jugador, 'corto'), caraHijo(estado, 1), caraAdulto(estado.pareja, 'largo')], titulo: t('album.familia'), fondo: '#d8f3dc' },
+  ];
+}

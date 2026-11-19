@@ -25,6 +25,7 @@ import { formatoTiempo, type StageTimer } from './StageTimer';
 import { TextPanel } from './TextPanel';
 import { WristSkip } from './WristSkip';
 
+const CIELO = '#cfe3ef';
 const _pos = new Vector3();
 const _quat = new Quaternion();
 const _euler = new Euler(0, 0, 0, 'YXZ');
@@ -74,7 +75,7 @@ export class Juego {
     this.renderer.xr.setFoveation(1);
     contenedor.appendChild(this.renderer.domElement);
 
-    this.scene.background = new Color('#cfe3ef');
+    this.scene.background = new Color(CIELO);
     // Sin sombras en tiempo real: luz hemisférica + una direccional suave.
     const cielo = new HemisphereLight(0xffffff, 0x9a8f80, 2.2);
     const sol = new DirectionalLight(0xffffff, 1.2);
@@ -113,6 +114,7 @@ export class Juego {
     this.escenas = new SceneManager(definiciones(this), this.fader, {
       antesDeEntrar: () => {
         this.ajustarLuz(1);
+        this.ajustarCielo(null);
         this.inter.limpiar();
         this.audio.pararTodo();
         this.alSaltar = null;
@@ -122,6 +124,8 @@ export class Juego {
       alReiniciar: () => {
         this.estado = nuevaPartida();
         this.tiempoSesion = 0;
+        // Cada partida es una sesión de métricas (en modo evento, una por persona).
+        if (this.renderer.xr.isPresenting && !this.metrics.sesion) this.metrics.iniciarSesion();
         this.manos.setPiel('#e9bb98');
       },
     });
@@ -185,6 +189,16 @@ export class Juego {
     this.estacion.position.set(_pos.x, this.alturaPecho, _pos.z);
     this.estacion.rotation.set(0, _euler.y, 0);
     this.estacion.updateMatrixWorld(true);
+  }
+
+  /** true cuando queda poco del tiempo total: las etapas se completan solas para llegar al final. */
+  get apurado(): boolean {
+    return this.tiempoSesion >= CONFIG.tiempos.sesionMaxima - CONFIG.tiempos.final - 15;
+  }
+
+  /** Cambia el color del cielo (null = el de siempre). Se restaura al cambiar de escena. */
+  ajustarCielo(color: string | null): void {
+    (this.scene.background as Color).set(color ?? CIELO);
   }
 
   /** Atenúa (o restaura con 1) la iluminación general. Se restaura sola al cambiar de escena. */

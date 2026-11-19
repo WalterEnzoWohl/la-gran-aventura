@@ -10,6 +10,8 @@ import { Customize } from './02_Customize';
 import { PregnancyBirth } from './03_PregnancyBirth';
 import { Baby } from './04_Baby';
 import { PreTeen } from './05_PreTeen';
+import { Teen } from './06_Teen';
+import { Ending } from './07_Ending';
 
 export function definirEscenas(juego: Juego): DefinicionEscena[] {
   const escenas: DefinicionEscena[] = [
@@ -18,6 +20,8 @@ export function definirEscenas(juego: Juego): DefinicionEscena[] {
     { id: 'embarazo', crear: () => new PregnancyBirth(juego) },
     { id: 'bebe', crear: () => new Baby(juego) },
     { id: 'preadolescente', crear: () => new PreTeen(juego) },
+    { id: 'adolescente', crear: () => new Teen(juego) },
+    { id: 'final', crear: () => new Ending(juego) },
   ];
   const prueba = typeof location !== 'undefined' && new URLSearchParams(location.search).get('prueba') === '1';
   if (prueba) escenas.unshift({ id: 'prueba', crear: () => new PruebaGestos(juego) });

@@ -159,8 +159,17 @@ export abstract class EscenaEtapa extends EscenaBase {
   }
 
   update(dt: number): void {
-    if (this.viva && this.etapa.update(dt)) this.misiones.completarTodo();
+    if (this.viva) {
+      // Tope de la etapa, o tiempo total de la sesión casi agotado.
+      const tope = this.etapa.update(dt) || (this.juego.apurado && this.etapa.forzar());
+      if (tope) this.misiones.completarTodo();
+    }
     super.update(dt);
+  }
+
+  /** Duración de la transición del álbum: más corta si la etapa llegó al tope. */
+  protected get duracionAlbum(): number {
+    return this.etapa.alcanzado ? 5 : 10;
   }
 
   exit(): void {

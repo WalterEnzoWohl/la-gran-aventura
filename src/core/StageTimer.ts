@@ -20,6 +20,13 @@ export class StageTimer {
     return false;
   }
 
+  /** Da el tope por alcanzado ahora (por ejemplo, si se acaba el tiempo total de la sesión). */
+  forzar(): boolean {
+    if (this.alcanzado) return false;
+    this.alcanzado = true;
+    return true;
+  }
+
   /** Fracción del tope consumida (0 a 1). */
   get fraccion(): number {
     return Math.min(1, this.tiempo / this.tope);

@@ -115,7 +115,7 @@
   "adolescente": {
     "curiosidad": "El cerebro adolescente sigue desarrollándose hasta pasados los 20 años. Tu compañía sigue importando.",
     "afeitada": "Agarrá la máquina y seguí las flechas",
-    "crema": "Agarrá el pomo y tocá los granitos",
+    "crema": "Agarrá el pomo de crema",
     "llaves": "Agarrá las llaves del perchero",
     "noLeGusto": "¿Y si no le gusto?",
     "consejos": [
@@ -131,7 +131,14 @@
         "texto": "Cualquier cosa, me llamás",
         "respuesta": "Gracias. Saber que estás me deja más tranquilo."
       }
-    ]
+    ],
+    "otroLado": "Ahora el otro lado: seguí las flechas",
+    "granitos": "Tocá los granitos con la crema",
+    "gracias": "¡Gracias! Quedé como nuevo.",
+    "teLlevo": "¿Me llevás? ¡Llego tarde!",
+    "elegiConsejo": "Elegí un consejo para darle",
+    "cine": "CINE",
+    "nervios": "Estoy re nervioso..."
   },
   "final": {
     "frases": [
@@ -145,7 +152,8 @@
       "Controles pediátricos en los centros de salud (contenido provisorio)",
       "Espacios de primera infancia (contenido provisorio)"
     ],
-    "gracias": "¡Gracias por jugar!"
+    "gracias": "¡Gracias por jugar!",
+    "jugarDeNuevo": "Jugar de nuevo"
   },
   "album": {
     "embarazo": "La espera",
@@ -157,6 +165,7 @@
     "catorceAnios": "14 años",
     "quinceAnios": "15 años",
     "dieciseisAnios": "16 años",
-    "familia": "Nuestra familia"
+    "familia": "Nuestra familia",
+    "nacimientoFoto": "¡Llegó!"
   }
 }

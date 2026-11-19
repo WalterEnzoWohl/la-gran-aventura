@@ -398,7 +398,7 @@ export class PreTeen extends EscenaEtapa {
       this.mostrarObjetivo('');
       this.juego.ajustarLuz(1);
     });
-    await mostrarAlbum(this.salaAlbum, fotosAdolescencia(this.juego.estado), this.tweens, this.juego.audio, 10).listo;
+    await mostrarAlbum(this.salaAlbum, fotosAdolescencia(this.juego.estado), this.tweens, this.juego.audio, this.duracionAlbum).listo;
     this.terminar();
   }
 }

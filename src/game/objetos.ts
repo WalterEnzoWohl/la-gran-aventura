@@ -135,3 +135,37 @@ export class ProgresoCircular {
     this.arco.geometry = new RingGeometry(this.radio * 0.78, this.radio, 32, 1, Math.PI / 2 - k * Math.PI * 2, Math.max(0.001, k * Math.PI * 2));
   }
 }
+
+/** Máquina de afeitar: `cabezal` es el punto que sigue el trazo. */
+export function crearMaquina(): { grupo: Group; cabezal: Object3D } {
+  const grupo = new Group();
+  grupo.name = 'maquina';
+  malla(grupo, GEO.cilindro, '#3d5a80', { pos: [0, -0.02, 0], esc: [0.016, 0.1, 0.016] });
+  malla(grupo, GEO.caja, '#e0e1dd', { pos: [0, 0.045, 0], esc: [0.05, 0.025, 0.018] });
+  malla(grupo, GEO.caja, '#98c1d9', { pos: [0, 0.06, 0], esc: [0.046, 0.006, 0.014] });
+  const cabezal = new Object3D();
+  cabezal.position.y = 0.06;
+  grupo.add(cabezal);
+  return { grupo, cabezal };
+}
+
+/** Pomo de crema para el acné. */
+export function crearPomo(): Group {
+  const g = new Group();
+  g.name = 'pomo';
+  malla(g, GEO.cilindro, '#f1faee', { esc: [0.018, 0.09, 0.012] });
+  malla(g, GEO.cilindro, '#e63946', { pos: [0, 0.052, 0], esc: [0.01, 0.016, 0.01] });
+  malla(g, GEO.caja, '#a8dadc', { pos: [0, 0, 0.013], esc: [0.024, 0.04, 0.002] });
+  return g;
+}
+
+/** Llavero con dos llaves. */
+export function crearLlaves(): Group {
+  const g = new Group();
+  g.name = 'llaves';
+  malla(g, GEO.aro, '#c0c0c0', { esc: 0.022 });
+  malla(g, GEO.caja, '#d4af37', { pos: [-0.012, -0.04, 0], esc: [0.012, 0.045, 0.004], rot: [0, 0, 0.25] });
+  malla(g, GEO.caja, '#c0c0c0', { pos: [0.012, -0.038, 0], esc: [0.012, 0.04, 0.004], rot: [0, 0, -0.2] });
+  malla(g, GEO.esfera, '#e63946', { pos: [0, -0.02, 0.004], esc: 0.012 });
+  return g;
+}

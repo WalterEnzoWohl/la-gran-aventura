@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Vector3 } from 'three';
-import { PinchDetector, PokeDetector, RubCounter } from '../src/core/Gestures';
+import { PathFollower, PinchDetector, PokeDetector, RubCounter } from '../src/core/Gestures';
 
 describe('PinchDetector (histéresis 1,5 cm / 3 cm)', () => {
   it('empieza por debajo de 1,5 cm y no se suelta hasta pasar 3 cm', () => {
@@ -175,5 +175,35 @@ describe('RubCounter con seguimiento entrecortado', () => {
     const antes = r.segundos;
     for (let i = 0; i < 144; i++) r.update([{ id: 'der-palma', punto: centro.clone() }], centro, dt);
     expect(r.segundos - antes).toBeLessThanOrEqual(0.16);
+  });
+});
+
+describe('PathFollower (afeitada: a menos de 4 cm del trazo)', () => {
+  const trazo = [0, 1, 2, 3, 4].map((i) => new Vector3(0, -i * 0.025, 0));
+
+  it('avanza siguiendo el trazo en orden', () => {
+    const p = new PathFollower(trazo, 0.04);
+    for (const punto of trazo) p.update(punto.clone().add(new Vector3(0.03, 0, 0)));
+    expect(p.completo).toBe(true);
+  });
+
+  it('no avanza si la máquina está lejos del trazo', () => {
+    const p = new PathFollower(trazo, 0.04);
+    for (const punto of trazo) p.update(punto.clone().add(new Vector3(0.06, 0, 0)));
+    expect(p.siguiente).toBe(0);
+  });
+
+  it('no se puede empezar por el final', () => {
+    const p = new PathFollower(trazo, 0.04);
+    p.update(trazo[4]);
+    expect(p.siguiente).toBe(0);
+    expect(p.progreso).toBe(0);
+  });
+
+  it('tolera un movimiento rápido que saltea un punto', () => {
+    const p = new PathFollower(trazo, 0.02);
+    p.update(trazo[0]);
+    p.update(trazo[2]);
+    expect(p.siguiente).toBe(3);
   });
 });

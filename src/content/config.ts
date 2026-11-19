@@ -57,6 +57,10 @@ export interface Tiempos {
   final: number;
   /** Duración de cada fundido (los dos sumados no superan 300 ms). */
   fundido: number;
+  /** Duración máxima de toda la experiencia. Cerca del límite, la etapa en curso se completa sola. */
+  sesionMaxima: number;
+  /** Segundos que se muestra el cierre antes de reiniciar en modo evento. */
+  reinicioEvento: number;
 }
 
 export const CONFIG = {
@@ -74,7 +78,7 @@ export const CONFIG = {
   /** ?debug=1: teclas 0-9 saltan a una escena, FPS y cronómetros en pantalla. */
   debug: params.get('debug') === '1',
 
-  tiempos: { pista: 10, autocompletar: 30, topeEtapa: 135, inicio: 60, final: 60, fundido: 0.15 } as Tiempos,
+  tiempos: { pista: 10, autocompletar: 30, topeEtapa: 135, inicio: 60, final: 60, fundido: 0.15, sesionMaxima: 480, reinicioEvento: 15 } as Tiempos,
 
   /** URL que recibe los eventos por POST. Vacío = solo guardado local. */
   metricsEndpoint: '',

@@ -388,7 +388,7 @@ export class Baby extends EscenaEtapa {
       this.salaAlbum.visible = true;
       this.mostrarObjetivo('');
     });
-    await mostrarAlbum(this.salaAlbum, fotosInfancia(this.juego.estado), this.tweens, this.juego.audio, 10).listo;
+    await mostrarAlbum(this.salaAlbum, fotosInfancia(this.juego.estado), this.tweens, this.juego.audio, this.duracionAlbum).listo;
     this.terminar();
   }
 }
