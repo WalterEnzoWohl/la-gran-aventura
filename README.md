@@ -2,7 +2,7 @@
 
 Experiencia WebXR para Meta Quest 2, solo con las manos. La especificación vigente está en [Claude.md](Claude.md).
 
-> Estado: **hito 2 (inicio)**. Escenas 01 a 03; la prueba de gestos del hito 1 sigue disponible con `?prueba=1`. El README completo para el equipo llega en el hito 6.
+> Estado: **hito 3 (etapa bebé)**. Escenas 01 a 04; la prueba de gestos del hito 1 sigue disponible con `?prueba=1`. El README completo para el equipo llega en el hito 6.
 
 ## Jugar
 

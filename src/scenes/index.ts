@@ -8,12 +8,14 @@ import { PruebaGestos } from './00_PruebaGestos';
 import { Intro } from './01_Intro';
 import { Customize } from './02_Customize';
 import { PregnancyBirth } from './03_PregnancyBirth';
+import { Baby } from './04_Baby';
 
 export function definirEscenas(juego: Juego): DefinicionEscena[] {
   const escenas: DefinicionEscena[] = [
     { id: 'intro', crear: () => new Intro(juego) },
     { id: 'personalizacion', crear: () => new Customize(juego) },
     { id: 'embarazo', crear: () => new PregnancyBirth(juego) },
+    { id: 'bebe', crear: () => new Baby(juego) },
   ];
   const prueba = typeof location !== 'undefined' && new URLSearchParams(location.search).get('prueba') === '1';
   if (prueba) escenas.unshift({ id: 'prueba', crear: () => new PruebaGestos(juego) });
